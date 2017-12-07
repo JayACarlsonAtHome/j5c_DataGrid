@@ -21,6 +21,7 @@
 //
 
 #include <iostream>
+#include <sstream>
 
 namespace J5C_DSL_Code {
 
@@ -30,7 +31,7 @@ namespace J5C_DSL_Code {
     enum class enum_pad_direction {
         unknown = 0, right = 1, left = 2, both = 3, decimal = 4
     };
-    using enum_padDir = enum_pad_direction;
+    using epadDir = enum_pad_direction;
     using usInt   = unsigned int;
     using sstr    = std::string;
 
@@ -41,10 +42,11 @@ namespace J5C_DSL_Code {
         // static variables
         //
         static const bool s_default_multi_line_output = false;
-        static const enum_padDir s_default_pad_direction = enum_padDir::right;
+        static const epadDir s_default_pad_direction = epadDir::right;
         //
         static const usInt s_default_display_width = 25;
         static const usInt s_default_precision = 5;
+
         //
         // non static variables
         //
@@ -52,12 +54,11 @@ namespace J5C_DSL_Code {
         bool m_multi_line_output    { false };
         bool m_sql_quote            { false };
 
-
-        enum_padDir m_pad_direction { enum_pad_direction ::left };
+        epadDir m_pad_direction { enum_pad_direction ::left };
         //
         sstr m_column_header                { "Default Header Name"};
-        sstr m_column_description_long      { "Default Header Long Description"};
-        sstr m_column_description_short     { "Default Short Description"};
+        sstr m_column_description_long      { "Default Header Long  Description"};
+        sstr m_column_description_short     { "Default Header Short Description"};
         sstr m_left_fill_char               { " " };
         //
         usInt m_display_width               { 25 };
@@ -65,22 +66,63 @@ namespace J5C_DSL_Code {
 
         void init(bool debug) noexcept;
 
+        //order of variables to be consistent
+        //m_debug
+        //m_multi_line_output
+        //m_sql_quote
+        //m_pad_direction
+        //m_column_header
+        //m_column_description_long
+        //m_column_description_short
+        //m_left_fill_char
+        //usInt m_display_width
+        //usInt m_precision
+
+        //order of variables to be consistent
+        //const bool debug
+        //const bool multi_line_output
+        //const bool sql_quote
+        //const epadDir pad_direction
+        //const sstr column_header
+        //const sstr column_description_long
+        //const sstr column_description_short
+        //const sstr left_fill_char
+        //const usInt display_width
+        //const usInt precision
+
+
         //
     public:
 
-        explicit DataColumnHeader(std::unique_ptr<DataColumnHeader> &other) noexcept;         // copy constructor
         // Constructors
-        DataColumnHeader()  noexcept;
+        DataColumnHeader();
+        DataColumnHeader(const bool debug)    noexcept;
+        DataColumnHeader(const bool debug,
+                const bool multi_line_output,
+                const bool sql_quote,
+                const epadDir pad_direction,
+                const sstr column_header,
+                const sstr column_description_long,
+                const sstr column_description_short,
+                const sstr left_fill_char,
+                const usInt display_width,
+                const usInt precision) noexcept;
 
-        explicit DataColumnHeader(bool debug)  noexcept;
+        DataColumnHeader(const DataColumnHeader &other)  noexcept;       // copy constructor
+        DataColumnHeader& operator=(const DataColumnHeader& other)
+        { this->Copy_Values(other); return *this; } ;                       // assignment
+
+
+
         virtual ~DataColumnHeader()  noexcept;
 
-
         //
+        bool Get_Debug() const noexcept;
         bool Get_Multi_Line_Enabled() noexcept;
         bool Get_SQL_Quote() noexcept;
 
         //
+        std::string Get_Address_as_String() const noexcept;
         DataColumnHeader*  Get_Address() noexcept;
         enum_pad_direction Get_Pad_Direction() noexcept;
         //
@@ -92,10 +134,8 @@ namespace J5C_DSL_Code {
         usInt Get_DisplayWidth() noexcept;
         usInt Get_Precision() noexcept;
         //
-        void Copy_Values(std::unique_ptr<DataColumnHeader>& other) noexcept;
+        void Copy_Values(const DataColumnHeader& other) noexcept;
         void Display_Address() noexcept;
-        void Initialize(const usInt display_width, const usInt precision, bool multi_line_enabled, const enum_padDir padding, const sstr left_fill_char,
-                        const sstr column_header,  const sstr column_description_short, const sstr column_description_long) noexcept;
         void Set_ColumnHeader(const sstr value)  noexcept;
         void Set_ColumnDescriptionLong(const sstr value) noexcept;
         //
@@ -105,7 +145,7 @@ namespace J5C_DSL_Code {
         void Set_DisplayWidth(usInt value) noexcept;
         void Set_LeftFillCharacter(const sstr value) noexcept;
         void Set_MultiLineOutput(const bool value) noexcept;
-        void Set_Pad_Direction(const enum_padDir value) noexcept;
+        void Set_Pad_Direction(const epadDir value) noexcept;
         void Set_SQL_Quote(const bool value) noexcept;
         //
         void Set_Precision(const usInt value) noexcept;

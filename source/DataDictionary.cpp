@@ -53,6 +53,7 @@ namespace J5C_DSL_Code {
     void DataDictionary::Clear() noexcept {
         m_is_full = false;
         mv_data_column_header.clear();
+        mv_data_column_header.reserve(10);
     }
 
     void DataDictionary::Display_Column(const usLong i) noexcept {
@@ -120,10 +121,9 @@ namespace J5C_DSL_Code {
         mv_data_column_header.clear();
     }
 
-    DataColumnHeader DataDictionary::Get_DataColumnHeader(const usLong i) noexcept {
-        DataColumnHeader dch(false);
-        if (i < mv_data_column_header.size()) {
-            dch = mv_data_column_header.at(i);
+    DataColumnHeader& DataDictionary::Get_DataColumnHeader(DataColumnHeader& dch, const usLong i) noexcept {
+                if (i < mv_data_column_header.size()) {
+            dch.Copy_Values(mv_data_column_header.at(i));
         }
         return dch;
     }
@@ -140,7 +140,7 @@ namespace J5C_DSL_Code {
         sstr display_header = "";
         sstr padding = "";
         sstr curr_header = mv_data_column_header[index].Get_ColumnHeader();
-        enum_padDir padDir = mv_data_column_header[index].Get_Pad_Direction();
+        epadDir padDir = mv_data_column_header[index].Get_Pad_Direction();
 
         if (index < size) {
             auto pad_length = column_width - curr_header.length();
@@ -151,7 +151,7 @@ namespace J5C_DSL_Code {
     }
 
 
-    sstr DataDictionary::Get_TempValueWithPadding(const enum_padDir padDir, const sstr value, const sstr padding,
+    sstr DataDictionary::Get_TempValueWithPadding(const epadDir padDir, const sstr value, const sstr padding,
                                                   const usLong column_width, const usInt precision,
                                                   const bool isHeader) noexcept {
 
@@ -163,15 +163,15 @@ namespace J5C_DSL_Code {
         sstr display_value = "";
 
         switch (padDir) {
-            case enum_padDir::unknown :
+            case epadDir::unknown :
                 display_value = value;
                 display_value.append(padding);
                 break;
-            case enum_padDir::left :
+            case epadDir::left :
                 display_value = padding;
                 display_value.append(value);
                 break;
-            case enum_padDir::decimal :
+            case epadDir::decimal :
                 is_decimal = this->m_cf.validate_string_is_numeric(value);
                 if (is_decimal) {
                     auto pos = value.find('.');
@@ -223,12 +223,12 @@ namespace J5C_DSL_Code {
                     }
                 }
                 break;
-            case enum_padDir::right :
+            case epadDir::right :
                 display_value = working_value;
                 display_value.append(padding);
                 break;
 
-            case enum_padDir::both :
+            case epadDir::both :
                 // account for column widths that are odd.
                 padding1 = padding.substr(0, pad_length);
                 if (((pad_length * 2) + value.length()) < column_width) {
@@ -246,7 +246,7 @@ namespace J5C_DSL_Code {
 
         const auto column_width = mv_data_column_header[index].Get_DisplayWidth();
         const auto size = mv_data_column_header.size();
-        const enum_padDir padDir = mv_data_column_header[index].Get_Pad_Direction();
+        const epadDir padDir = mv_data_column_header[index].Get_Pad_Direction();
         const auto precision = mv_data_column_header[index].Get_Precision();
         // variables
         sstr display_value = "";
@@ -254,7 +254,7 @@ namespace J5C_DSL_Code {
 
         if (index < size) {
             usLong pad_length;
-            if ((value.length() < max_width) && (padDir == enum_padDir::both)) {
+            if ((value.length() < max_width) && (padDir == epadDir::both)) {
                 pad_length = max_width - value.length();
                 display_value = std::string(pad_length, ' ');
                 display_value.append(value);
@@ -334,7 +334,7 @@ namespace J5C_DSL_Code {
 
     void DataDictionary::Display_Address(const usLong i) noexcept {
         std::cout << "  Column Address: ";
-        mv_data_column_header[i].Display_Address();
+        mv_data_column_header[i].Get_Address_as_String();
     }
 
     void DataDictionary::Remove(const sstr data_column_header) noexcept {
@@ -366,7 +366,7 @@ namespace J5C_DSL_Code {
             return;
         }
         if (index != s_max) {
-            mv_data_column_header[index].Copy_Values(dch);
+            mv_data_column_header[index].Copy_Values(*dch);
             m_version++;
         }
     }

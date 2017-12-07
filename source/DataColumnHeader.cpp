@@ -37,24 +37,29 @@ namespace J5C_DSL_Code {
 // public methods
 //
 
-    DataColumnHeader::DataColumnHeader(std::unique_ptr<DataColumnHeader> &other) noexcept
+    DataColumnHeader::DataColumnHeader(bool debug) noexcept
     {
-        //std::cout << "Copy Constructor" << std::endl;
-        Copy_Values(other);
+        init(debug);
+    }
+
+    DataColumnHeader::DataColumnHeader(const DataColumnHeader &other) noexcept
+    {
+        this->Copy_Values(other);
     }
 
     void DataColumnHeader::init(bool debug) noexcept
     {
-        m_debug = debug;
-        m_display_width = s_default_display_width;
-        m_precision = s_default_precision;
-        m_multi_line_output = false;
-        m_pad_direction = s_default_pad_direction;
-        m_left_fill_char = " ";
+        m_debug                     = debug;
+        m_multi_line_output         = s_default_multi_line_output;
+        m_sql_quote                 = false;
+        m_pad_direction             = s_default_pad_direction;
+        m_column_header             = "Default Header Name";
+        m_column_description_long   = "Default Header Long  Description";
+        m_column_description_short  = "Default Header Short Description";
+        m_left_fill_char            = " ";
+        m_display_width             = 25;
+        m_precision                 = 8;
 
-        m_column_header = "Default Header";
-        m_column_description_short = "Default Short Description";
-        m_column_description_long = "Default Long  Description";
         if (m_debug)
         {
             std::cout << "Calling DataColumnHeader Constructor" << std::endl;
@@ -62,14 +67,35 @@ namespace J5C_DSL_Code {
 
     }
 
-    DataColumnHeader::DataColumnHeader() noexcept
+
+     DataColumnHeader::DataColumnHeader(const bool debug,
+                              const bool multi_line_output,
+                              const bool sql_quote,
+                              const epadDir pad_direction,
+                              const sstr column_header,
+                              const sstr column_description_long,
+                              const sstr column_description_short,
+                              const sstr left_fill_char,
+                              const usInt display_width,
+                              const usInt precision) noexcept
     {
-        this->init(false);
+        m_debug                     = debug;
+        m_multi_line_output         = multi_line_output;
+        m_sql_quote                 = sql_quote;
+        m_pad_direction             = pad_direction;
+        m_column_header             = column_header;
+        m_column_description_long   = column_description_long;
+        m_column_description_short  = column_description_short;
+        m_left_fill_char            = left_fill_char;
+        m_display_width             = display_width;
+        m_precision                 = precision;
     }
 
-    DataColumnHeader::DataColumnHeader(bool debug) noexcept
+
+
+    DataColumnHeader::DataColumnHeader()
     {
-        this->init(debug);
+        this->init(false);
     }
 
     DataColumnHeader::~DataColumnHeader() noexcept {
@@ -78,6 +104,10 @@ namespace J5C_DSL_Code {
         }
     }
 
+    bool DataColumnHeader::Get_Debug() const noexcept
+    {
+        return m_debug;
+    }
 
     bool DataColumnHeader::Get_Multi_Line_Enabled() noexcept {
         return m_multi_line_output;
@@ -91,7 +121,7 @@ namespace J5C_DSL_Code {
         return this;
     }
 
-    enum_padDir DataColumnHeader::Get_Pad_Direction() noexcept {
+    epadDir DataColumnHeader::Get_Pad_Direction() noexcept {
         return this->m_pad_direction;
     }
 
@@ -120,44 +150,29 @@ namespace J5C_DSL_Code {
         return m_precision;
     }
 
-    void DataColumnHeader::Copy_Values(std::unique_ptr<DataColumnHeader>& other) noexcept {
-        //this is used
-        //std::cout << "Copy Values" << std::endl;
 
-        if (this->Get_Address() != other->Get_Address())  // prevent self move or assignment
+    void DataColumnHeader::Copy_Values(const DataColumnHeader& other) noexcept {
+
+        if (this->Get_Address_as_String() != other.Get_Address_as_String())  // prevent self move or assignment
         {
-            this->m_display_width = other->m_display_width;
-            this->m_precision = other->m_precision;
-            this->m_multi_line_output = other->m_multi_line_output;
-            this->m_pad_direction = other->m_pad_direction;
-            this->m_left_fill_char = other->m_left_fill_char;
-
-            this->m_column_header = other->m_column_header;
-            this->m_column_description_long = other->m_column_description_long;
-            this->m_column_description_short = other->m_column_description_short;
-            this->m_sql_quote = other->m_sql_quote;
+            m_debug                     = other.m_debug;
+            m_multi_line_output         = other.m_multi_line_output;
+            m_sql_quote                 = other.m_sql_quote;
+            m_pad_direction             = other.m_pad_direction;
+            m_column_header             = other.m_column_header;
+            m_column_description_long   = other.m_column_description_long;
+            m_column_description_short  = other.m_column_description_short;
+            m_left_fill_char            = other.m_left_fill_char;
+            m_display_width             = other.m_display_width;
+            m_precision                 = other.m_precision;
         }
     }
 
-    void DataColumnHeader::Display_Address() noexcept {
-        std::cout << this << std::endl;
-    }
 
-    void DataColumnHeader::Initialize(const usInt display_width, const usInt precision, const bool multi_line_enabled,
-                                      const enum_padDir padding, const sstr left_fill_char,
-                                      const sstr column_header, const sstr column_description_short,
-                                      const sstr column_description_long) noexcept {
-        m_debug = false;
-        m_sql_quote = false;
-        Set_DisplayWidth(display_width);
-        Set_Precision(precision);
-        Set_MultiLineOutput(multi_line_enabled);
-        Set_Pad_Direction(padding);
-        Set_LeftFillCharacter(left_fill_char);
-        Set_ColumnHeader(column_header);
-        Set_ColumnDescriptionShort(column_description_short);
-        Set_ColumnDescriptionLong(column_description_long);
-        Set_Pad_Direction(padding);
+    std::string DataColumnHeader::Get_Address_as_String() const noexcept {
+        std::stringstream ss;
+        ss << this;
+        return ss.str();
     }
 
 
@@ -198,7 +213,7 @@ namespace J5C_DSL_Code {
         m_multi_line_output = value;
     }
 
-    void DataColumnHeader::Set_Pad_Direction(const enum_padDir value) noexcept {
+    void DataColumnHeader::Set_Pad_Direction(const epadDir value) noexcept {
         m_pad_direction = value;
     }
 
@@ -227,23 +242,23 @@ namespace J5C_DSL_Code {
     void DataColumnHeader::Show_Pad_Direction() noexcept {
         sstr result;
         switch (m_pad_direction) {
-            case enum_padDir::unknown : {
+            case epadDir::unknown : {
                 result = "Unknown ";
                 break;
             }
-            case enum_padDir::left : {
+            case epadDir::left : {
                 result = "Left ";
                 break;
             }
-            case enum_padDir::right : {
+            case epadDir::right : {
                 result = "Right ";
                 break;
             }
-            case enum_padDir::both : {
+            case epadDir::both : {
                 result = "Both ";
                 break;
             }
-            case enum_padDir::decimal : {
+            case epadDir::decimal : {
                 result = "Decimal ";
             }
         }

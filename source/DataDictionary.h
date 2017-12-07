@@ -38,7 +38,10 @@ namespace J5C_DSL_Code {
 #ifndef DATAGRID_TEST_001_DATA_DICTIONARY_H
 #define DATAGRID_TEST_001_DATA_DICTIONARY_H
 
-    using usLong =  unsigned long ;
+    using epadDir = enum_pad_direction;
+    using usInt   = unsigned int;
+    using sstr    = std::string;
+    using usLong  = unsigned long ;
 
 
     class DataDictionary {
@@ -54,7 +57,7 @@ namespace J5C_DSL_Code {
         //
         std::vector<DataColumnHeader> mv_data_column_header;
         //
-        sstr Get_TempValueWithPadding(const enum_padDir padDir, const sstr value, const sstr padding, const usLong column_width, const usInt precision, const bool isHeader)  noexcept;
+        sstr Get_TempValueWithPadding(const epadDir padDir, const sstr value, const sstr padding, const usLong column_width, const usInt precision, const bool isHeader)  noexcept;
         //
         usLong DoesExist_Column(const sstr data_column_header) noexcept;
         //
@@ -74,7 +77,7 @@ namespace J5C_DSL_Code {
         virtual ~DataDictionary() noexcept;
 
         //
-        DataColumnHeader Get_DataColumnHeader(const usLong i) noexcept;
+        DataColumnHeader& Get_DataColumnHeader(DataColumnHeader& dch, const usLong i) noexcept;
         //
         bool   Get_SQL_Quotes(const usLong i) noexcept;
         //

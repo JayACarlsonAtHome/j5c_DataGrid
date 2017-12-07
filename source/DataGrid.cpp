@@ -66,9 +66,9 @@ namespace J5C_DSL_Code {
         mv_dd_column_index.push_back(index);
         mv_dd_column_max_width.push_back(0);
         if (index < 1) {
-            m_total_width += mp_dd.Get_DataColumnHeader(index).Get_DisplayWidth();
+            m_total_width += mp_dd.Get_DataColumnHeader(dch, index).Get_DisplayWidth();
         } else {
-            m_total_width += mp_dd.Get_DataColumnHeader(index).Get_DisplayWidth() + 1;
+            m_total_width += mp_dd.Get_DataColumnHeader(dch, index).Get_DisplayWidth() + 1;
         }
     }
 

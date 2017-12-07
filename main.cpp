@@ -24,6 +24,7 @@
 // This file runs tests, but also demonstrates how various components can be used.
 //
 
+#include <string>
 #include <iostream>
 #include <iomanip>
 #include <memory>
@@ -32,8 +33,14 @@
 
 using namespace J5C_DSL_Code;
 
+using epadDir = enum_pad_direction;
+using usInt   = unsigned int;
+using sstr    = std::string;
+using usLong  = unsigned long;
+
+
 enum class enum_test_result {
-    ptrNull = 0, error = 1, good = 2
+    ptrNull = 0, failed = 1, good = 2
 };
 
 //
@@ -47,13 +54,13 @@ void show_total_results(unsigned int results[]) {
     std::cout << "  Test Result Count of Type ptrNull : " << std::setfill('0') << std::setw(4)
               << results[static_cast<int>(enum_test_result::ptrNull)] << std::endl;
     std::cout << "  Test Result Count of Type Error   : " << std::setfill('0') << std::setw(4)
-              << results[static_cast<int>(enum_test_result::error)] << std::endl;
+              << results[static_cast<int>(enum_test_result::failed)] << std::endl;
     std::cout << "  Test Result Count of Type Good    : " << std::setfill('0') << std::setw(4)
               << results[static_cast<int>(enum_test_result::good)] << std::endl;
     std::cout << std::endl;
 }
 
-void show_test_and_results(unsigned int test_number, std::string test_name, unsigned int results[],
+void show_test_and_results(unsigned int test_number, std::string& test_name, unsigned int results[],
                            enum_test_result test_result) {
 
     std::cout << std::endl;
@@ -75,102 +82,79 @@ void show_test_and_results(unsigned int test_number, std::string test_name, unsi
 // specific test helping functions
 //
 
-enum_test_result validate_column(std::unique_ptr<DataColumnHeader>& dch,
-                                 unsigned int width,
-                                 unsigned int precision,
-                                 bool multi_line_enabled,
-                                 enum_pad_direction padding,
-                                 std::string left_fill_char,
-                                 std::string column_name,
-                                 std::string description_short,
-                                 std::string description_long) {
+enum_test_result validate_column(DataColumnHeader& dch,
+        const bool debug,
+        const bool multi_line_output,
+        const bool sql_quote,
+        const epadDir pad_direction,
+        const sstr& column_header,
+        const sstr& column_description_long,
+        const sstr& column_description_short,
+        const sstr& left_fill_char,
+        const usInt display_width,
+        const usInt precision)
+{
 
     enum_test_result result = enum_test_result ::ptrNull;
 
-    bool test1 = false;
-    bool test2 = false;
-    bool test3 = false;
-    bool test4 = false;
-    bool test5 = false;
-    bool test6 = false;
-    bool test7 = false;
-    bool test8 = false;
+    std::string tempString1 = "";
+    std::string tempString2 = "";
 
-    if (dch != nullptr) {
-        if (dch->Get_DisplayWidth() == width) test1 = true;
-        if (dch->Get_Precision() == precision) test2 = true;
-        if (dch->Get_Multi_Line_Enabled() == multi_line_enabled) test3 = true;
-        if (dch->Get_Pad_Direction() == padding) test4 = true;
-        if (dch->Get_LeftFillCharacter() == left_fill_char) test5 = true;
-        if (dch->Get_ColumnHeader() == column_name) test6 = true;
-        if (dch->Get_ColumnDescriptionShort() == description_short.substr(0, width)) test7 = true;
-        if (dch->Get_ColumnDescriptionLong() == description_long) test8 = true;
-        if (test1 && test2 && test3 && test4 && test5 && test6 && test7 && test8) {
+    bool test01 = false;
+    bool test02 = false;
+    bool test03 = false;
+    bool test04 = false;
+    bool test05 = false;
+    bool test06 = false;
+    bool test07 = false;
+    bool test08 = false;
+    bool test09 = false;
+    bool test10 = false;
+    tempString1 = dch.Get_Address_as_String();
+
+    if (tempString1 != "0") {
+        if (dch.Get_Debug()                 == debug)                       test01 = true;
+        if (dch.Get_Multi_Line_Enabled()    == multi_line_output)           test02 = true;
+        if (dch.Get_SQL_Quote()             == sql_quote)                   test03 = true;
+        if (dch.Get_Pad_Direction()         == pad_direction)               test04 = true;
+
+        tempString1 = dch.Get_ColumnHeader();
+        if (tempString1 == column_header)                                   test05 = true;
+
+        tempString1 = dch.Get_ColumnDescriptionLong();
+        if (tempString1 == column_description_long)                         test06 = true;
+
+        tempString1 = column_description_short.substr(0, display_width);
+        tempString2 = dch.Get_ColumnDescriptionShort().substr(0, display_width);
+
+        if (tempString1 == tempString2)                                     test07 = true;
+        if (dch.Get_LeftFillCharacter()     == left_fill_char)              test08 = true;
+        if (dch.Get_DisplayWidth()          == display_width)               test09 = true;
+        if (dch.Get_Precision()             == precision)                   test10 = true;
+
+        if (test01 && test02 && test03 && test04 && test05
+                   && test06 && test07 && test08 && test09 && test10)
+        {
             result = enum_test_result::good;
         }
         else
         {
-            result = enum_test_result::error;
-            std::cout << "!!! Error --  Test Failed" << std::endl;
+            result = enum_test_result::failed;
+            std::cout << "!!! Warning --  Test Failed" << std::endl;
         }
     } else
     {
         result = enum_test_result::ptrNull;
-        std::cout << "!!! Error --  " << std::endl;
-        std::cout << "!!! Error -- DataColumnHeader* dch == ptrNull" << std::endl;
-        std::cout << "!!! Error --  " << std::endl;
+        std::cout << "!!! Warning --  " << std::endl;
+        std::cout << "!!! Warning -- DataColumnHeader* dch == ptrNull" << std::endl;
+        std::cout << "!!! Warning --  " << std::endl;
     }
     return result;
 }
-
-enum_test_result validate_DD_column(std::unique_ptr<DataColumnHeader>& dch,
-                                    DataDictionary *dd,
-                                    unsigned long index
-) {
-    enum_test_result result = enum_test_result::error;
-
-    DataColumnHeader dd_dch = dd->Get_DataColumnHeader(index);
-
-    bool test1 = false;
-    bool test2 = false;
-    bool test3 = false;
-    bool test4 = false;
-    bool test5 = false;
-    bool test6 = false;
-    bool test7 = false;
-
-    if ((dch != nullptr) && (dd != nullptr)) {
-        if (dch->Get_DisplayWidth() == dd_dch.Get_DisplayWidth()) test1 = true;
-        if (dch->Get_Precision() == dd_dch.Get_Precision()) test2 = true;
-        if (dch->Get_Multi_Line_Enabled()
-            == dd_dch.Get_Multi_Line_Enabled())
-            test3 = true;
-        if (dch->Get_Pad_Direction() == dd_dch.Get_Pad_Direction()) test4 = true;
-        if (dch->Get_ColumnHeader() == dd_dch.Get_ColumnHeader()) test5 = true;
-        if (dch->Get_ColumnDescriptionShort() == dd_dch.Get_ColumnDescriptionShort()) test6 = true;
-        if (dch->Get_ColumnDescriptionLong() == dd_dch.Get_ColumnDescriptionLong()) test7 = true;
-        if (test1 && test2 && test3 && test4 && test5 && test6 & test7) {
-            result = enum_test_result::good;
-        }
-        else
-        {
-            result = enum_test_result::error;
-            std::cout << "!!! Error --  Test Failed" << std::endl;
-        }
-    } else
-    {
-        result = enum_test_result::ptrNull;
-        std::cout << "!!! Error --  " << std::endl;
-        std::cout << "!!! Error -- DataColumnHeader* dch == ptrNull" << std::endl;
-        std::cout << "!!! Error --  " << std::endl;
-    }
-    return result;
-}
-
 
 std::string generate_test_name(bool make,
-                               std::string pre_text,
-                               std::string post_text,
+                               std::string& pre_text,
+                               std::string& post_text,
                                std::unique_ptr<DataColumnHeader>& dch) {
     std::string test_name;
     if (pre_text.length() > 0) {
@@ -178,7 +162,7 @@ std::string generate_test_name(bool make,
         test_name.append(" ");
     }
     if (make) {
-        test_name.append(" Make new(std::nothrow) DataColumnHeader(");
+        test_name.append(" Make new DataColumnHeader(");
     } else {
         test_name.append(" Initialize DataColumnHeader(");
     }
@@ -230,9 +214,9 @@ std::string generate_test_name(bool make,
 
 }
 
-enum_test_result validate_indexes_match(unsigned long index1, DataDictionary &dd, std::string column_name) {
+enum_test_result validate_indexes_match(unsigned long index1, DataDictionary &dd, std::string& column_name) {
 
-    enum_test_result result;
+    enum_test_result result = enum_test_result ::failed;
 
     auto index2 = dd.Get_DataColumnIndex(column_name);
     std::cout << "index1: " << index1 << "   Index2: " << index2 << std::endl;
@@ -252,11 +236,8 @@ enum_test_result validate_indexes_match(unsigned long index1, DataDictionary &dd
 // test sets
 //
 
-DataColumnHeader* dch;
-unsigned int width = 25;
-unsigned int precision = 5;
-bool multi_line_enabled = false;
-enum_pad_direction padding = enum_pad_direction::right;
+
+
 
 int test_001() {
     horizontal_line();
@@ -264,34 +245,144 @@ int test_001() {
     std::cout << "Testing DataColumnHeader Class:" << std::endl;
     std::cout << std::endl;
 
+
+
     // initialize variables
     unsigned int results[3] = {0, 0, 0};
     unsigned int test_number = 0;
-
     enum_test_result result;
+    DataColumnHeader dch1{};
+
+    bool debug = false;
+    bool multi_line_output = false;
+    bool sql_quote = false;
+    epadDir pad_direction = enum_pad_direction::right;
+    std::string column_header            = "Default Header Name";
+    std::string column_description_short = "Default Header Short Description";
+    std::string column_description_long  = "Default Header Long  Description";
+    std::string left_fill_char = " ";
+    usInt display_width = 25;
+    usInt precision = 8;
 
     test_number++; // 1
-    std::string column_header     = "Default Header";
-    std::string description_short = "Default Short Description";
-    std::string description_long  = "Default Long  Description";
-    width = 25;
-    precision = 5;
-    multi_line_enabled = false;
-    padding = enum_pad_direction::right;
-    std::string left_fill_char = " ";
+    dch1.Show_Data_Header();
+    std::string test_name = "Make Default DataColumnHeader";
+    result = validate_column(dch1, debug, multi_line_output, sql_quote, pad_direction, column_header, column_description_long,
+                                column_description_short, left_fill_char, display_width, precision);
+    show_test_and_results(test_number, test_name, results, result);
 
-    std::unique_ptr<DataColumnHeader> dch1 = std::make_unique<DataColumnHeader>(true);
-    dch1->Set_Debug();
-    dch1->Show_Data_Header();
-    std::string test_name = "Make std::unique_ptr<DataColumnHeader> dch1 = std::make_unique<DataColumnHeader>()";
-    result = validate_column(dch1, width, precision, multi_line_enabled, padding, left_fill_char, column_header, description_short, description_long);
+    test_number++; // 2
+    debug = true;
+    dch1.Set_Debug();
+    dch1.Show_Data_Header();
+    test_name = "Test Set Debug";
+    result = validate_column(dch1, debug, multi_line_output, sql_quote, pad_direction, column_header, column_description_long,
+                             column_description_short, left_fill_char, display_width, precision);
+    show_test_and_results(test_number, test_name, results, result);
+
+    test_number++; // 3
+    debug = false;
+    dch1.UnSet_Debug();
+    dch1.Show_Data_Header();
+    test_name = "Test UnSet Debug";
+    result = validate_column(dch1, debug, multi_line_output, sql_quote, pad_direction, column_header, column_description_long,
+                             column_description_short, left_fill_char, display_width, precision);
+    show_test_and_results(test_number, test_name, results, result);
+
+    test_number++; // 4
+    multi_line_output = true;
+    dch1.Set_MultiLineOutput(multi_line_output);
+    dch1.Show_Data_Header();
+    test_name = "Test multi_line_output switch to true";
+    result = validate_column(dch1, debug, multi_line_output, sql_quote, pad_direction, column_header, column_description_long,
+                             column_description_short, left_fill_char, display_width, precision);
+    show_test_and_results(test_number, test_name, results, result);
+
+    test_number++; // 5
+    sql_quote = true;
+    dch1.Set_SQL_Quote(sql_quote);
+    dch1.Show_Data_Header();
+    test_name = "Test sql_quote switch to true";
+    result = validate_column(dch1, debug, multi_line_output, sql_quote, pad_direction, column_header, column_description_long,
+                             column_description_short, left_fill_char, display_width, precision);
+    show_test_and_results(test_number, test_name, results, result);
+
+    test_number++; // 6
+    pad_direction = enum_pad_direction ::left;
+    dch1.Set_Pad_Direction(pad_direction);
+    dch1.Show_Data_Header();
+    test_name = "Test set pad_direction to left";
+    result = validate_column(dch1, debug, multi_line_output, sql_quote, pad_direction, column_header, column_description_long,
+                             column_description_short, left_fill_char, display_width, precision);
+    show_test_and_results(test_number, test_name, results, result);
+
+    test_number++; // 7
+    column_header = "Testing Header Name";
+    dch1.Set_ColumnHeader(column_header);
+    dch1.Show_Data_Header();
+    test_name = "Test set header name";
+    result = validate_column(dch1, debug, multi_line_output, sql_quote, pad_direction, column_header, column_description_long,
+                             column_description_short, left_fill_char, display_width, precision);
+    show_test_and_results(test_number, test_name, results, result);
+
+    test_number++; // 8
+    column_description_long = "Testing Header Long  Description";
+    dch1.Set_ColumnDescriptionLong(column_description_long);
+    dch1.Show_Data_Header();
+    test_name = "Test set long description";
+    result = validate_column(dch1, debug, multi_line_output, sql_quote, pad_direction, column_header, column_description_long,
+                             column_description_short, left_fill_char, display_width, precision);
+    show_test_and_results(test_number, test_name, results, result);
+
+    test_number++; // 9
+    column_description_short = "Testing Header Short Description";
+    dch1.Set_ColumnDescriptionShort(column_description_short);
+    dch1.Show_Data_Header();
+    test_name = "Test set long description";
+    result = validate_column(dch1, debug, multi_line_output, sql_quote, pad_direction, column_header, column_description_long,
+                             column_description_short, left_fill_char, display_width, precision);
+    show_test_and_results(test_number, test_name, results, result);
+
+    test_number++; // 10
+    left_fill_char = "#";
+    dch1.Set_LeftFillCharacter(left_fill_char);
+    dch1.Show_Data_Header();
+    test_name = "Test set left fill character";
+    result = validate_column(dch1, debug, multi_line_output, sql_quote, pad_direction, column_header, column_description_long,
+                             column_description_short, left_fill_char, display_width, precision);
+    show_test_and_results(test_number, test_name, results, result);
+
+    test_number++; // 11
+    display_width = 30;
+    // we have to make the short description longer again for the test to work
+    dch1.Set_DisplayWidth(display_width);
+    column_description_short = "Testing Header Short Description";
+    dch1.Set_ColumnDescriptionShort(column_description_short);
+
+    dch1.Show_Data_Header();
+    test_name = "Test set display width";
+    result = validate_column(dch1, debug, multi_line_output, sql_quote, pad_direction, column_header, column_description_long,
+                             column_description_short, left_fill_char, display_width, precision);
     show_test_and_results(test_number, test_name, results, result);
 
 
-    test_number++; // 2
-    column_header = "Test Header 1";
-    dch1->Set_ColumnHeader(column_header);
-    result = validate_column(dch1, width, precision, multi_line_enabled, padding, left_fill_char, column_header, description_short, description_long);
+    test_number++; // 12
+    precision = 5;
+    // we have to make the short description longer again for the test to work
+    dch1.Set_Precision(precision);
+    dch1.Show_Data_Header();
+    test_name = "Test set precision";
+    result = validate_column(dch1, debug, multi_line_output, sql_quote, pad_direction, column_header, column_description_long,
+                             column_description_short, left_fill_char, display_width, precision);
+    show_test_and_results(test_number, test_name, results, result);
+
+/*
+ *
+  column_header, column_description_long,
+                             column_description_short, left_fill_char, display_width, precision);
+
+ *
+nabled, padding, left_fill_char, column_header, description_short, description_long);
     dch1->Show_Data_Header();
     test_name = "Set_ColumnHeader(column_header) : (\"" + column_header + "\")";
     show_test_and_results(test_number, test_name, results, result);
@@ -304,7 +395,6 @@ int test_001() {
     test_name = "dch1->Set_ColumnDescriptionShort(description_short) : (\"" + description_short + "\")";
     show_test_and_results(test_number, test_name, results, result);
 
-    /*
 
     test_number++; // 4
     column_header = "Test Header 1";
@@ -921,7 +1011,7 @@ int test_003() {
     show_test_and_results(test_number, test_name, results, result);
 
     test_number++; // Test 4
-    dch->Initialize(5, 5, false, enum_padDir::right, left_fill_char, "Speed", "Speed of Ship Type", "Speed of Ship Type");
+    dch->Initialize(5, 5, false, epadDir::right, left_fill_char, "Speed", "Speed of Ship Type", "Speed of Ship Type");
     dd.Add(dch);
     size += 1;
     index = size - 1;
@@ -936,7 +1026,7 @@ int test_003() {
     show_test_and_results(test_number, test_name, results, result);
 
     test_number++; // Test 6
-    dch->Initialize(11, 5, false, enum_padDir::right, left_fill_char, "Cargo Space", "Cargo Space of Ship Type", "Cargo Space of Ship Type");
+    dch->Initialize(11, 5, false, epadDir::right, left_fill_char, "Cargo Space", "Cargo Space of Ship Type", "Cargo Space of Ship Type");
     dd.Add(dch);
     size += 1;
     index = size - 1;
@@ -951,7 +1041,7 @@ int test_003() {
     show_test_and_results(test_number, test_name, results, result);
 
     test_number++; // Test 8
-    dch->Initialize(10, 5, false, enum_padDir::right, left_fill_char, "Protection", "Protection of Ship Type", "Protection of Ship Type");
+    dch->Initialize(10, 5, false, epadDir::right, left_fill_char, "Protection", "Protection of Ship Type", "Protection of Ship Type");
     dd.Add(dch);
     size += 1;
     index = size - 1;
@@ -969,7 +1059,7 @@ int test_003() {
 
     test_number++; // Test 10
     auto curr_size = dd.Get_Size();
-    dch->Initialize(14, 5, false, enum_padDir::right, left_fill_char, SHIP_TYPE, "Type of ship", "Type of Ship for Deep Space Game.");
+    dch->Initialize(14, 5, false, epadDir::right, left_fill_char, SHIP_TYPE, "Type of ship", "Type of Ship for Deep Space Game.");
     dd.Add(dch);
     if (curr_size == dd.Get_Size())
     {
@@ -982,7 +1072,7 @@ int test_003() {
     show_test_and_results(test_number, test_name, results, result);
 
     test_number++; //Test 11
-    dch->Initialize(5, 5, false, enum_padDir::right, left_fill_char,  "Speed", "Speed of Ship Type", "Speed of Ship Type");
+    dch->Initialize(5, 5, false, epadDir::right, left_fill_char,  "Speed", "Speed of Ship Type", "Speed of Ship Type");
     dd.Add(dch);
     if (curr_size == dd.Get_Size())
     {
@@ -995,7 +1085,7 @@ int test_003() {
     show_test_and_results(test_number, test_name, results, result);
 
     test_number++; //Test 12
-    dch->Initialize(11, 5, false, enum_padDir::right, left_fill_char, "Cargo Space", "Cargo Space of Ship Type", "Cargo Space of Ship Type");
+    dch->Initialize(11, 5, false, epadDir::right, left_fill_char, "Cargo Space", "Cargo Space of Ship Type", "Cargo Space of Ship Type");
     dd.Add(dch);
     if (curr_size == dd.Get_Size())
     {
@@ -1008,7 +1098,7 @@ int test_003() {
     show_test_and_results(test_number, test_name, results, result);
 
     test_number++; // Test 13
-    dch->Initialize(11, 5, false, enum_padDir::right, left_fill_char, "Protection1", "Protection1 of Ship Type", "Protection1 of Ship Type");
+    dch->Initialize(11, 5, false, epadDir::right, left_fill_char, "Protection1", "Protection1 of Ship Type", "Protection1 of Ship Type");
     dd.Add(dch);
     curr_size++;
     if (curr_size == dd.Get_Size())
@@ -1023,7 +1113,7 @@ int test_003() {
 
     dch1 = new(std::nothrow) DataColumnHeader();
     dch1->Set_Debug();
-    dch1->Initialize(15, 5, false, enum_padDir::right, left_fill_char, "This is a test", "This is a test of Ship Type", "This is a test of Ship Type");
+    dch1->Initialize(15, 5, false, epadDir::right, left_fill_char, "This is a test", "This is a test of Ship Type", "This is a test of Ship Type");
     dd.Replace("Protection1", dch1);
     horizontal_line();
     dd.Show_DataDictionaryAll();
@@ -1201,7 +1291,7 @@ int test_004() {
     DataDictionary* dd = new(std::nothrow) DataDictionary(true);
     if (dd != nullptr)
     {
-        enum_padDir padding;
+        epadDir padding;
 
         DataColumnHeader dch1;
         dch1.Set_Debug();
@@ -1218,7 +1308,7 @@ int test_004() {
             dg1->Set_Pre_Text("This is the Pre Text");
             dg1->Set_Post_Text("This is the Post Text");
             dg1->Reset_Columns();
-            padding = enum_padDir::decimal;
+            padding = epadDir::decimal;
             test_004a(dg1, &dch1, padding);
             test_004b(dg1);
             test_004d(dg1);
@@ -1239,9 +1329,13 @@ int test_004() {
 // end of test sets
 //
 
+
 int main() {
 
+    std::string test;
+    std::unique_ptr<DataColumnHeader> dch1 = std::make_unique<DataColumnHeader>(true);
     test_001();
+
     //test_002();
     //test_003();
     //test_004();
