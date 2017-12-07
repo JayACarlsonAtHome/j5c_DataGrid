@@ -1,0 +1,39 @@
+// Grid:Name                "Grid Test: Space Ship 1"
+// Grid:SQL_Table_Name      "SQL Space Ship 1"
+// Grid:Output_File         "Space Ship 1.txt"
+
+// DataDictionary:Version   
+// Column:Name              "Type"
+// Column:MultiLine         "False"
+// Column:Left_Padding      " "
+// Column:Long Description  "Type of Space Ship"
+// Column:Short Description "Type of Space Ship"
+// Column:Delimiter         ";"
+// Column:SQL_Quotes         "True"
+
+// Column:Name              "Armor Thickness"
+// Column:MultiLine         "False"
+// Column:Left_Padding      " "
+// Column:Long Description  "Armor Thickness in Inches"
+// Column:Short Description "Armor Thickness"
+// Column:Delimiter         ";"
+// Column:SQL_Quotes         "False"
+
+// Column:Name              "Speed"
+// Column:MultiLine         "False"
+// Column:Left_Padding      " "
+// Column:Long Description  "Maximum Speed of Spaceship in 1000 miles per second."
+// Column:Short Description "Speed in 1Km/second"
+// Column:Delimiter         ";"
+// Column:SQL_Quotes         "False"
+
+** Space Ship 1
+;
+{;}{ Space Mine Laying Ship ;  1 ; 25 };
+{;}{ Destroyer              ;  4 ; 15 };
+{;}{ Crusier                ;  6 ; 13 };
+{;}{ Battleship             ; 10 ;  7 };
+
+
+
+
