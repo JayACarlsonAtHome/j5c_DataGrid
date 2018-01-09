@@ -141,6 +141,17 @@ enum_test_result validate_column(DataColumnHeader& dch,
         {
             result = enum_test_result::failed;
             std::cout << "!!! Warning --  Test Failed" << std::endl;
+            std::cout << "test01 = " << std::boolalpha << test01 << std::endl;
+            std::cout << "test02 = " << std::boolalpha << test02 << std::endl;
+            std::cout << "test03 = " << std::boolalpha << test03 << std::endl;
+            std::cout << "test04 = " << std::boolalpha << test04 << std::endl;
+            std::cout << "test05 = " << std::boolalpha << test05 << std::endl;
+            std::cout << "test06 = " << std::boolalpha << test06 << std::endl;
+            std::cout << "test07 = " << std::boolalpha << test07 << std::endl;
+            std::cout << "test08 = " << std::boolalpha << test08 << std::endl;
+            std::cout << "test09 = " << std::boolalpha << test09 << std::endl;
+            std::cout << "test10 = " << std::boolalpha << test10 << std::endl;
+
         }
     } else
     {
@@ -376,492 +387,6 @@ int test_001() {
                              column_description_short, left_fill_char, display_width, precision);
     show_test_and_results(test_number, test_name, results, result);
 
-/*
- *
-  column_header, column_description_long,
-                             column_description_short, left_fill_char, display_width, precision);
-
- *
-nabled, padding, left_fill_char, column_header, description_short, description_long);
-    dch1->Show_Data_Header();
-    test_name = "Set_ColumnHeader(column_header) : (\"" + column_header + "\")";
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 3
-    description_short = "Description Test Header 1 Short";
-    dch1->Set_ColumnDescriptionShort(description_short);
-    result = validate_column(dch1, width, precision, multi_line_enabled, padding, left_fill_char, column_header, description_short, description_long);
-    dch1->Show_Data_Header();
-    test_name = "dch1->Set_ColumnDescriptionShort(description_short) : (\"" + description_short + "\")";
-    show_test_and_results(test_number, test_name, results, result);
-
-
-    test_number++; // 4
-    column_header = "Test Header 1";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 25;
-    precision = 5;
-    multi_line_enabled = false;
-    padding = enum_pad_direction::right;
-    delete dch;
-    dch = new(std::nothrow) DataColumnHeader(column_header, description_short, description_long);
-    dch->Set_Debug();
-    result = validate_column(dch, width, precision, multi_line_enabled, padding, left_fill_char, column_header, description_short, description_long);
-    dch->Show_Data_Header();
-    test_name = "Make new(std::nothrow) DataColumnHeader(\"" + column_header + "\", \"" + description_short + "\"" + ", \"" +
-                description_long + "\")";
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 5
-    column_header = "Test Header 1";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 32;
-    precision = 5;
-    multi_line_enabled = false;
-    padding = enum_pad_direction::right;
-    delete dch;
-    dch = new(std::nothrow) DataColumnHeader(width, column_header, description_short, description_long);
-    dch->Set_Debug();
-    result = validate_column(dch, width, precision, multi_line_enabled, padding, left_fill_char, column_header, description_short, description_long);
-    dch->Show_Data_Header();
-    test_name =
-            "Make new(std::nothrow) DataColumnHeader(" + std::to_string(width) + ", \"" + column_header + "\", \"" + description_short +
-            "\"" + ", \"" + description_long + "\")";
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 6
-    column_header = "Test Header 1";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 32;
-    precision = 10;
-    multi_line_enabled = false;
-    padding = enum_pad_direction::right;
-    delete dch;
-    dch = new(std::nothrow) DataColumnHeader(width, precision, column_header, description_short, description_long);
-    dch->Set_Debug();
-    result = validate_column(dch, width, precision, multi_line_enabled, padding, left_fill_char, column_header, description_short, description_long);
-    dch->Show_Data_Header();
-    test_name = "Make new(std::nothrow) DataColumnHeader(" + std::to_string(width) + ", " + std::to_string(precision) + ", \"" +
-                column_header + "\", \"" + description_short + "\"" + ", \"" + description_long + "\")";
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 7
-    column_header = "Test Header 1";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 32;
-    precision = 10;
-    multi_line_enabled = true;
-    padding = enum_pad_direction::right;
-    delete dch;
-    dch = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_header, description_short,
-                               description_long);
-    dch->Set_Debug();
-    result = validate_column(dch, width, precision, multi_line_enabled, padding, left_fill_char, column_header, description_short, description_long);
-    dch->Show_Data_Header();
-    test_name =
-            "Make new(std::nothrow) DataColumnHeader(" + std::to_string(width) + ", " + std::to_string(precision) + ",  true, \"" +
-            column_header + "\", \"" + description_short + "\"" + ", \"" + description_long + "\")";
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 8
-    column_header = "Test Header 1";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 14;
-    precision = 10;
-    multi_line_enabled = true;
-    padding = enum_pad_direction::right;
-    delete dch;
-    dch = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_header, description_short,
-                               description_long);
-    dch->Set_Debug();
-    result = validate_column(dch, width, precision, multi_line_enabled, padding, left_fill_char, column_header, description_short, description_long);
-    dch->Show_Data_Header();
-    std::string pre_text = "";
-    std::string post_text = "";
-    test_name = generate_test_name(true, pre_text, post_text, *dch);
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 9
-    column_header = "Test Header 1";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 14;
-    precision = 10;
-    multi_line_enabled = true;
-    padding = enum_pad_direction::right;
-    delete dch;
-    dch = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_header, description_short,
-                               description_long);
-    dch->Set_Debug();
-    result = validate_column(dch, width, precision, multi_line_enabled, padding, left_fill_char, column_header, description_short, description_long);
-    dch->Show_Data_Header();
-    pre_text = "";
-    post_text = "";
-    test_name = generate_test_name(true, pre_text, post_text, *dch);
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 10
-    std::cout << dch->Get_ColumnHeader() << ":  ";
-    dch->Display_Address();
-    std::cout << std::endl;
-    if (dch->Get_Address() != nullptr) {
-        result = enum_test_result::good;
-    } else {
-        result = enum_test_result::unknown;
-    }
-    test_name = "Show Address ";
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 11
-    column_header = "Test Header 1";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 34;
-    precision = 10;
-    multi_line_enabled = true;
-    padding = enum_pad_direction::right;
-    delete dch;
-    dch = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_header, description_short, description_long);
-    dch->Set_Debug();
-    std::string column_name1 = "This is a new(std::nothrow) header";
-    pre_text = "";
-    post_text = "Then Set ColumnHeader = " + column_name1;
-    test_name = generate_test_name(true, pre_text, post_text, *dch);
-    dch->Set_ColumnHeader(column_name1);
-    result = validate_column(dch, width, precision, multi_line_enabled, padding, left_fill_char, column_name1, description_short, description_long);
-    dch->Show_Data_Header();
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 12
-    column_header = "Test Header 1";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 32;
-    precision = 10;
-    multi_line_enabled = true;
-    padding = enum_pad_direction::right;
-    delete dch;
-    dch = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_header, description_short, description_long);
-    dch->Set_Debug();
-    validate_column(dch, width, precision, multi_line_enabled, padding, left_fill_char, column_header, description_short, description_long);
-    unsigned int width1 = 14;
-    pre_text = "";
-    post_text = "Then Set width = " + std::to_string(width1);
-    test_name = generate_test_name(true, pre_text, post_text, *dch);
-    dch->Set_DisplayWidth(width1);
-    validate_column(dch, width1, precision, multi_line_enabled, padding, left_fill_char, column_header, description_short, description_long);
-    dch->Show_Data_Header();
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 13
-    column_header = "Test Header 1";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 32;
-    precision = 10;
-    multi_line_enabled = true;
-    padding = enum_pad_direction::right;
-    delete dch;
-    dch = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_header, description_short,
-                               description_long);
-    dch->Set_Debug();
-    std::string description_long1 = "new(std::nothrow) -- Description Test Header 1 Long";
-    pre_text = "";
-    post_text = "Then Set description_long = " + description_long1;
-    test_name = generate_test_name(true, pre_text, post_text, *dch);
-    dch->Set_ColumnDescriptionLong(description_long1);
-    result = validate_column(dch, width, precision, multi_line_enabled, padding, left_fill_char, column_header, description_short, description_long1);
-    dch->Show_Data_Header();
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 14
-    column_header = "Test Header 1";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 45;
-    precision = 10;
-    multi_line_enabled = false;
-    padding = enum_pad_direction::right;
-    delete dch;
-    dch = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_header, description_short, description_long);
-    dch->Set_Debug();
-    bool multi_line_output1 = true;
-    pre_text = "";
-    post_text = "Then Set multi line output = true ";
-    test_name = generate_test_name(true, pre_text, post_text, *dch);
-    dch->Set_MultiLineOutput(multi_line_output1);
-    result = validate_column(dch, width, precision, multi_line_output1, padding, left_fill_char, column_header, description_short, description_long);
-    dch->Show_Data_Header();
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 15
-    column_header = "Test Header 1";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 45;
-    precision = 10;
-    multi_line_enabled = true;
-    padding = enum_pad_direction::right;
-    delete dch;
-    dch = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_header, description_short,
-                               description_long);
-    dch->Set_Debug();
-    multi_line_output1 = false;
-    pre_text = "";
-    post_text = "Then Set multi line output = false ";
-    test_name = generate_test_name(true, pre_text, post_text, *dch);
-    dch->Set_MultiLineOutput(multi_line_output1);
-    result = validate_column(dch, width, precision, multi_line_output1, padding, left_fill_char, column_header, description_short, description_long);
-    dch->Show_Data_Header();
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 16
-    column_header = "Test Header 1";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 45;
-    precision = 10;
-    multi_line_enabled = false;
-    padding = enum_pad_direction::right;
-    delete dch;
-    dch = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_header, description_short,
-                               description_long);
-    dch->Set_Debug();
-    unsigned int precision1 = 17;
-    pre_text = "";
-    post_text = "Then Set precision = " + std::to_string(precision1);
-    test_name = generate_test_name(true, pre_text, post_text, *dch);
-    dch->Set_Precision(precision1);
-    result = validate_column(dch, width, precision1, multi_line_enabled, padding, left_fill_char, column_header, description_short, description_long);
-    dch->Show_Data_Header();
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 17
-    column_header = "Test Header 1";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 45;
-    precision = 10;
-    multi_line_enabled = false;
-    padding = enum_pad_direction::left;
-    delete dch;
-    dch = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_header, description_short,
-                               description_long);
-    dch->Set_Debug();
-    enum_pad_direction pad_direction1 = enum_pad_direction::right;
-    pre_text = "";
-    post_text = "Then Set pad direction = right";
-    test_name = generate_test_name(true, pre_text, post_text, *dch);
-    dch->Set_Pad_Direction(pad_direction1);
-    result = validate_column(dch, width, precision, multi_line_enabled, pad_direction1, left_fill_char, column_header, description_short, description_long);
-    dch->Show_Data_Header();
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 18
-    column_header = "Test Header 1";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 45;
-    precision = 10;
-    multi_line_enabled = false;
-    padding = enum_pad_direction::right;
-    delete dch;
-    dch = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_header, description_short,
-                               description_long);
-    dch->Set_Debug();
-    pad_direction1 = enum_pad_direction::left;
-    pre_text = "";
-    post_text = "Then Set pad direction = left";
-    test_name = generate_test_name(true, pre_text, post_text, *dch);
-    dch->Set_Pad_Direction(pad_direction1);
-    result = validate_column(dch, width, precision, multi_line_enabled, pad_direction1, left_fill_char, column_header, description_short, description_long);
-    dch->Show_Data_Header();
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 19
-    column_header = "Test Header 1";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 45;
-    precision = 10;
-    multi_line_enabled = false;
-    padding = enum_pad_direction::right;
-    delete dch;
-    dch = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_header, description_short,
-                               description_long);
-    dch->Set_Debug();
-    pad_direction1 = enum_pad_direction::both;
-    pre_text = "";
-    post_text = "Then Set pad direction = both";
-    test_name = generate_test_name(true, pre_text, post_text, *dch);
-    dch->Set_Pad_Direction(pad_direction1);
-    result = validate_column(dch, width, precision, multi_line_enabled, pad_direction1, left_fill_char, column_header, description_short, description_long);
-    dch->Show_Data_Header();
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 20
-    column_header = "Test Header 1";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 45;
-    precision = 10;
-    multi_line_enabled = false;
-    padding = enum_pad_direction::both;
-    delete dch;
-    dch = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_header, description_short,
-                               description_long);
-    dch->Set_Debug();
-    pad_direction1 = enum_pad_direction::unknown;
-    pre_text = "";
-    post_text = "Then Set pad direction = unknown";
-    test_name = generate_test_name(true, pre_text, post_text, *dch);
-    dch->Set_Pad_Direction(pad_direction1);
-    result = validate_column(dch, width, precision, multi_line_enabled, pad_direction1, left_fill_char, column_header, description_short, description_long);
-    dch->Show_Data_Header();
-    show_test_and_results(test_number, test_name, results, result);
-
-    std::string column_name2;
-
-    test_number++; // 21
-    column_name1 = "Test Header 1";
-    column_name2 = "Test Header 2";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 45;
-    precision = 10;
-    multi_line_enabled = false;
-    padding = enum_pad_direction::both;
-    delete dch;
-    DataColumnHeader *dch1 = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_name1,
-                                                  description_short, description_long);
-    dch1->Set_Debug();
-    DataColumnHeader *dch2 = new(std::nothrow) DataColumnHeader(*dch1);
-    dch2->Set_Debug();
-    dch2->Set_ColumnHeader(column_name2);
-    test_name = "Make new(std::nothrow) DataColumnHeader, Make copy of new(std::nothrow) DataColumnHeader, dch2->Set_ColumnHeader(\"Test Header 2\") and ensure the addresses are different ";
-    enum_test_result test1 = validate_column(dch1, width, precision, multi_line_enabled, padding, left_fill_char, column_name1,
-                                             description_short, description_long);
-    enum_test_result test2 = validate_column(dch2, width, precision, multi_line_enabled, padding, left_fill_char, column_name2,
-                                             description_short, description_long);
-    bool test3 = (dch1 != dch2);
-    if ((test1 == enum_test_result::good)
-        && (test2 == enum_test_result::good)
-        && (test3)) {
-        result = enum_test_result::good;
-    } else {
-        result = enum_test_result::unknown;
-    }
-    dch1->Show_Data_Header();
-    dch2->Show_Data_Header();
-    dch1->Display_Address();
-    dch2->Display_Address();
-    show_test_and_results(test_number, test_name, results, result);
-
-
-    test_number++; // 22
-    column_name1 = "Test Header 1";
-    column_name2 = "Test Header 2";
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 45;
-    precision = 10;
-    multi_line_enabled = false;
-    padding = enum_pad_direction::both;
-    delete dch1;
-    delete dch2;
-    dch1 = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_name1, description_short,
-                                description_long);
-    dch1->Set_Debug();
-    dch2 = dch1;
-    dch2->Set_ColumnHeader(column_name2);
-    test_name = "Make new(std::nothrow) data column header, assignment to data column Header, change name, and ensure the addresses are the same";
-    test1 = validate_column(dch2, width, precision, multi_line_enabled, padding, left_fill_char, column_name2, description_short,
-                            description_long);
-    if (test1 == enum_test_result::good) {
-        result = enum_test_result::good;
-    } else {
-        result = enum_test_result::unknown;
-    }
-    dch1->Show_Data_Header();
-    dch2->Show_Data_Header();
-    dch1->Display_Address();
-    dch2->Display_Address();
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 23
-    column_name1 = "Test Header 1";
-    column_name2 = "Test Header 2";
-
-    description_short = "Description Test Header 1 Short";
-    description_long  = "Description Test Header 1 Long";
-    width = 45;
-    precision = 10;
-    multi_line_enabled = false;
-    padding = enum_pad_direction::both;
-    delete dch1;
-    // there is no dch2 at this time to free, if you make one you will get a really bad error message.
-    dch1 = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_name1, description_short,
-                                description_long);
-    dch1->Set_Debug();
-    dch2 = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_name2, description_short,
-                                description_long);
-    dch2->Set_Debug();
-    std::cout << "Before Copy" << std::endl;
-    dch1->Show_Data_Header();
-    dch2->Show_Data_Header();
-    dch2->Copy_Values(dch2, dch1);
-    test_name = "Make new(std::nothrow) DataColumnHeader dch1, Make new(std::nothrow) DataColumnHeader dch2, Copy Values from dch1 to dch2, and ensure the addresses are different";
-    test1 = validate_column(dch1, width, precision, multi_line_enabled, padding, left_fill_char, column_name1, description_short,
-                            description_long);
-    validate_column(dch2, width, precision, multi_line_enabled, padding, left_fill_char, column_name2, description_short,
-                            description_long);
-    if (test1 == enum_test_result::good) {
-        result = enum_test_result::good;
-    } else {
-        result = enum_test_result::unknown;
-    }
-    std::cout << "After Copy" << std::endl;
-    dch1->Show_Data_Header();
-    dch2->Show_Data_Header();
-    dch1->Display_Address();
-    dch2->Display_Address();
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // 24
-    column_name1 = "Test Header 1";
-    column_name2 = "Test Header 2";
-
-    description_short = "Description Test Header 1 Short";
-    description_long = "Description Test Header 1 Long";
-    width = 45;
-    precision = 10;
-    multi_line_enabled = false;
-    padding = enum_pad_direction::both;
-    delete dch1;
-    delete dch2;
-    dch1 = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_name1, description_short,
-                                description_long);
-    dch1->Set_Debug();
-    DataColumnHeader **p_dch1 = &dch1;
-    test_name = "Make new(std::nothrow) DataColumnHeader dch1, Make pointer to dch1, ensure the addresses are same";
-    validate_column(dch1, width, precision, multi_line_enabled, padding, left_fill_char, column_name1, description_short,
-                            description_long);
-    validate_column(dch2, width, precision, multi_line_enabled, padding, left_fill_char, column_name2, description_short,
-                            description_long);
-    dch1 = *p_dch1;
-    dch1->Show_Data_Header();
-    (*p_dch1)->Show_Data_Header();
-    dch1->Display_Address();
-    (*p_dch1)->Display_Address();
-    show_test_and_results(test_number, test_name, results, result);
-
-    delete dch1;
-*/
     std::cout << "Testing DataColumnHeader Class Summary:" << std::endl;
     show_total_results(results);
 
@@ -871,9 +396,10 @@ nabled, padding, left_fill_char, column_header, description_short, description_l
     return 0;
 }
 
-/*
+
 int test_002()
 {
+
     horizontal_line();
     std::cout << std::endl;
     std::cout << "Testing DataColumnHeader Class: Test Set 002" << std::endl;
@@ -882,35 +408,35 @@ int test_002()
     // initialize variables
     unsigned int results[3] = {0, 0, 0};
     unsigned int test_number = 0;
-    auto max_number_of_tests = 1001UL;
     enum_test_result result;
 
+    bool debug = true;
+    bool multi_line_output = false;
+    bool sql_quote = false;
+    int max_number_of_tests = 100000;
+    epadDir pad_direction = enum_pad_direction::right;
     std::string default_name = "Column Name ";
     std::string column_name  = "";
     std::string column_pad   = "00000";
     std::string index_temp   = "";
     std::string index        = "";
-    if (max_number_of_tests < 10)
-    {
-        max_number_of_tests = 10;
-    }
+
     std::string max_tests   = std::to_string(max_number_of_tests);
     auto pad_max_length     = max_tests.length()-1;
     std::string description_short = "Default Short Description";
     std::string description_long  = "Default Long  Description";
-    width = 25;
-    precision = 5;
+    int width = 26;
+    int precision = 5;
     bool multi_line_enabled = false;
     enum_pad_direction padding = enum_pad_direction::right;
     std::string left_fill_char = " ";
-    std::string test_name = "Make new(std::nothrow) DataColumnHeader() ";
+    std::string test_name = "make unique pointer to data column header";
     std::string pre_text = "";
     std::string post_text = "";
     long pad_length = 0;
-    DataColumnHeader *dch;
-    for (auto i = 1UL; i < max_number_of_tests; i++ )
+    for (auto i = 1UL; i <= max_number_of_tests; i++ )
     {
-        test_number++;
+        std::unique_ptr<DataColumnHeader> dch1 = std::make_unique<DataColumnHeader>(debug);
         index_temp = std::to_string(i);
         pad_length = pad_max_length - index_temp.length();
 
@@ -929,23 +455,21 @@ int test_002()
         column_name.append(default_name);
         column_name.append(index);
 
-        dch = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_name, description_short, description_long);
-        dch->Set_Debug();
-        result = validate_column(dch, width, precision, multi_line_enabled, padding, left_fill_char, column_name, description_short,
-                                 description_long);
-        dch->Show_Data_Header();
-        test_name= "Make new(std::nothrow) DataColumnHeader() ";
-        test_name = generate_test_name(true, pre_text, post_text, *dch);
+        dch1->Set_ColumnHeader(column_name);
+        dch1->Set_ColumnDescriptionShort(description_short);
+        dch1->Set_ColumnDescriptionLong(description_long);
+        dch1->Set_DisplayWidth(width);
+        dch1->Set_Precision(precision);
+        result = validate_column(*dch1, debug, multi_line_output, sql_quote, pad_direction, column_name, description_long,
+                                 description_short, left_fill_char, width, precision);
         show_test_and_results(test_number, test_name, results, result);
-        delete(dch);
     }
-
 
 
     return 0;
 };
 
-
+/*
 int test_003() {
     horizontal_line();
     std::cout << std::endl;
@@ -1332,11 +856,8 @@ int test_004() {
 
 int main() {
 
-    std::string test;
-    std::unique_ptr<DataColumnHeader> dch1 = std::make_unique<DataColumnHeader>(true);
     test_001();
-
-    //test_002();
+    test_002();
     //test_003();
     //test_004();
 }
