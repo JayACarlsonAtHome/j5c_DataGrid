@@ -40,19 +40,19 @@ namespace J5C_DSL_Code {
         char test_character;
 
         unsigned int pos = 0;
-        unsigned long max = str.length();
+        auto max = str.length();
         bool cont = true;
         bool pos_scientific = false;
         bool scientific = false;
-        unsigned int uint_max = std::numeric_limits<unsigned int>::max();
-        unsigned int pos_x = uint_max;
-        unsigned int pos_1 = uint_max;
-        unsigned int pos_1_test = 0;
-        unsigned int pos_0 = uint_max;
-        unsigned int pos_Up = uint_max;
-        unsigned int pos_sci_minus = std::numeric_limits<unsigned int>::max();
+        std::string temp;
+        auto pos_x = max;
+        auto pos_1 = max;
+        auto pos_1_test = max;
+        auto pos_0 = max;
+        auto pos_Up = max;
+        auto pos_sci_minus = max;
         bool sci_minus_exists = false;
-        unsigned int point_count = 0;
+        auto point_count = max - max;
         while ((pos < max) && (cont)) {
             test_character = str[pos];
 
@@ -96,7 +96,7 @@ namespace J5C_DSL_Code {
             ++pos;
         }
         if (scientific) {
-            if ((pos_x == uint_max) || (pos_1 == uint_max) || (pos_0 == uint_max) || (pos_Up == uint_max)) {
+            if ((pos_x == max) || (pos_1 == max) || (pos_0 == max) || (pos_Up == max)) {
                 cont = false;
             }
             pos_1_test = pos_1 + 1;

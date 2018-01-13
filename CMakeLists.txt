@@ -13,7 +13,6 @@ set(SOURCE_FILES
         source/DataDictionary.cpp
         source/DataGrid.h
         source/DataGrid.cpp
-
         main.cpp
         )
 

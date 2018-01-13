@@ -20,10 +20,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+
 #include "DataColumnHeader.h"
 
 namespace J5C_DSL_Code {
-
 
 //
 // Created by jay on 12/23/16.
@@ -109,44 +109,40 @@ namespace J5C_DSL_Code {
         return m_debug;
     }
 
-    bool DataColumnHeader::Get_Multi_Line_Enabled() noexcept {
+    bool DataColumnHeader::Get_Multi_Line_Enabled() const noexcept {
         return m_multi_line_output;
     }
 
-    bool DataColumnHeader::Get_SQL_Quote() noexcept {
+    bool DataColumnHeader::Get_SQL_Quote() const noexcept {
         return m_sql_quote;
     }
 
-    DataColumnHeader *DataColumnHeader::Get_Address()  noexcept{
-        return this;
-    }
-
-    epadDir DataColumnHeader::Get_Pad_Direction() noexcept {
+    epadDir DataColumnHeader::Get_Pad_Direction() const noexcept {
         return this->m_pad_direction;
     }
 
-    sstr DataColumnHeader::Get_ColumnDescriptionLong() noexcept {
+    sstr DataColumnHeader::Get_ColumnDescriptionLong() const noexcept {
         return this->m_column_description_long;
     }
 
-    sstr DataColumnHeader::Get_ColumnDescriptionShort() noexcept {
+    sstr DataColumnHeader::Get_ColumnDescriptionShort() const noexcept {
         return this->m_column_description_short.substr(0, m_display_width);
     }
 
-    sstr DataColumnHeader::Get_ColumnHeader() noexcept {
+    sstr DataColumnHeader::Get_ColumnHeader() const noexcept {
         return this->m_column_header;
     }
 
-    sstr DataColumnHeader::Get_LeftFillCharacter() noexcept {
+    sstr DataColumnHeader::Get_LeftFillCharacter() const noexcept {
         return m_left_fill_char;
     }
 
 
-    usInt DataColumnHeader::Get_DisplayWidth() noexcept {
+    usInt DataColumnHeader::Get_DisplayWidth() const noexcept {
         return this->m_display_width;
     }
 
-    usInt DataColumnHeader::Get_Precision() noexcept {
+    usInt DataColumnHeader::Get_Precision() const noexcept {
         return m_precision;
     }
 
@@ -174,7 +170,6 @@ namespace J5C_DSL_Code {
         ss << this;
         return ss.str();
     }
-
 
     void DataColumnHeader::Set_ColumnHeader(const sstr value) noexcept {
         if (value.length() > m_display_width) {
@@ -225,21 +220,19 @@ namespace J5C_DSL_Code {
         m_sql_quote = value;
     }
 
-    void DataColumnHeader::Show_Data_Header() noexcept {
+    void DataColumnHeader::Show_Data_Header() const noexcept {
         std::cout << "Data Column Header Details:" << std::endl;
-        std::cout << "Column Header:       "          << this->Get_ColumnHeader() << std::endl;
-        std::cout << "Description (Short): "    << this->Get_ColumnDescriptionShort()   << std::endl;
-        std::cout << "Description (Long) : "    << this->Get_ColumnDescriptionLong()    << std::endl;
-        std::cout << "Multi-line Enabled : "    <<  std::boolalpha <<  this->Get_Multi_Line_Enabled() << std::endl;
-        std::cout << "Width:     "      << this->Get_DisplayWidth()                 << std::endl;
-        std::cout << "Precision: "      << this->Get_Precision()                    << std::endl;
-        std::cout << "Padding:   ";        this->Show_Pad_Direction(); std::cout    << std::endl;
-        std::cout << "Left Fill: \""    << this->Get_LeftFillCharacter() << "\""    << std::endl;
-
-
+        std::cout << "Column Header:       " << this->Get_ColumnHeader() << std::endl;
+        std::cout << "Description (Short): " << this->Get_ColumnDescriptionShort()   << std::endl;
+        std::cout << "Description (Long) : " << this->Get_ColumnDescriptionLong()    << std::endl;
+        std::cout << "Multi-line Enabled : " <<  std::boolalpha <<  this->Get_Multi_Line_Enabled() << std::endl;
+        std::cout << "Width:     "           << this->Get_DisplayWidth()                 << std::endl;
+        std::cout << "Precision: "           << this->Get_Precision()                    << std::endl;
+        std::cout << "Padding:   ";             this->Show_Pad_Direction();            std::cout    << std::endl;
+        std::cout << "Left Fill: \""         << this->Get_LeftFillCharacter() << "\""    << std::endl;
     }
 
-    void DataColumnHeader::Show_Pad_Direction() noexcept {
+    void DataColumnHeader::Show_Pad_Direction() const noexcept {
         sstr result;
         switch (m_pad_direction) {
             case epadDir::unknown : {

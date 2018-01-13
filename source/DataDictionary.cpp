@@ -46,27 +46,39 @@ namespace J5C_DSL_Code {
         return found_column_header;
     }
 
-    void DataDictionary::Add_ColumnNow(DataColumnHeader& dch) noexcept {
+    void DataDictionary::Add_ColumnNow(DataColumnHeader& dch) noexcept
+    {
+        m_is_empty = false;
         this->mv_data_column_header.push_back(dch);
     }
 
     void DataDictionary::Clear() noexcept {
         m_is_full = false;
+        m_is_empty = true;
         mv_data_column_header.clear();
         mv_data_column_header.reserve(10);
     }
 
-    void DataDictionary::Display_Column(const usLong i) noexcept {
+    void DataDictionary::Display_Column(const usLong i) const noexcept {
         // This prints out all the data columns of the data dictionary or at least between start and stop
+
         std::cout << "DataDictionary Column Number:  " << std::setfill('0') << std::setw(4) << i << std::endl;
-        Display_Address(i);
+        sstr Address = Get_Address_As_String(i);
+        if (Address.length() > 0)
+        {
+            std::cout << "  Column Address:   " << Address << std::endl;
+        }
+
+        std::cout << "  Column Name with padding: ***" << Get_HeaderNameWithPadding(i) << "*** "<< std::endl;
         std::cout << "  Column Name:      " << mv_data_column_header[i].Get_ColumnHeader() << std::endl;
+
         std::cout << "  Column Width:     " << mv_data_column_header[i].Get_DisplayWidth() << std::endl;
-        std::cout << "  Column Precision: " << mv_data_column_header[i].Get_Precision() << std::endl;
-        std::cout << "  Column Short Description: " << mv_data_column_header[i].Get_ColumnDescriptionShort()
-                  << std::endl;
-        std::cout << "  Column Long  Description: " << mv_data_column_header[i].Get_ColumnDescriptionLong()
-                  << std::endl;
+        std::cout << "  Column Precision: " << mv_data_column_header[i].Get_Precision()    << std::endl;
+        std::cout << "  Column Short Description: "
+                  << mv_data_column_header[i].Get_ColumnDescriptionShort()                 << std::endl;
+        std::cout << "  Column Long  Description: "
+                  << mv_data_column_header[i].Get_ColumnDescriptionLong()                  << std::endl;
+        std::cout << "  Columm SQL_Quotes: " << Get_SQL_Quotes(i);
         std::cout << std::endl << std::endl;
     }
 
@@ -76,20 +88,20 @@ namespace J5C_DSL_Code {
         m_version++;
     }
 
-    void DataDictionary::Show_ColumnAlreadyExists() noexcept {
+    void DataDictionary::Show_ColumnAlreadyExists() const noexcept {
         if (!m_is_silent) {
             std::cout << "Warning!!! -- The DataColumn already exists; No column added to data dictionary."
                       << std::endl;
         }
     }
 
-    void DataDictionary::Show_DictionaryIsNowFull() noexcept {
+    void DataDictionary::Show_DictionaryIsNowFull() const noexcept {
         if (!m_is_silent) {
             std::cout << "Warning!!! -- The DataDictionary is now full." << std::endl;
         }
     }
 
-    void DataDictionary::Show_DictionaryIsAlreadyFull() noexcept {
+    void DataDictionary::Show_DictionaryIsAlreadyFull() const noexcept {
         if (!m_is_silent) {
             std::cout << "Warning!!! -- The DataDictionary is already full. No column added to data dictionary."
                       << std::endl;
@@ -97,7 +109,7 @@ namespace J5C_DSL_Code {
     }
 
 
-    void DataDictionary::Show_DictionaryIsEmpty() noexcept {
+    void DataDictionary::Show_DictionaryIsEmpty() const noexcept {
         std::cout << "The data dictionary is empty." << std::endl;
     }
 
@@ -128,11 +140,11 @@ namespace J5C_DSL_Code {
         return dch;
     }
 
-    sstr DataDictionary::Get_HeaderName(const usLong i) noexcept {
+    sstr DataDictionary::Get_HeaderName(const usLong i) const noexcept {
         return mv_data_column_header[i].Get_ColumnHeader();
     }
 
-    sstr DataDictionary::Get_HeaderNameWithPadding(const usLong index) noexcept {
+    sstr DataDictionary::Get_HeaderNameWithPadding(const usLong index) const noexcept {
 
         const auto column_width = mv_data_column_header[index].Get_DisplayWidth();
         const auto size = mv_data_column_header.size();
@@ -145,164 +157,122 @@ namespace J5C_DSL_Code {
         if (index < size) {
             auto pad_length = column_width - curr_header.length();
             padding = std::string(pad_length, ' ');
-            display_header = Get_TempValueWithPadding(padDir, curr_header, padding, column_width, 0, true);
+            display_header = Get_ValueWithPadding(index, curr_header, size);
         }
         return display_header;
     }
 
+    sstr DataDictionary::Get_ValueWithPadding(const usLong index, sstr value, const usLong max_width) const noexcept
+    {
 
-    sstr DataDictionary::Get_TempValueWithPadding(const epadDir padDir, const sstr value, const sstr padding,
-                                                  const usLong column_width, const usInt precision,
-                                                  const bool isHeader) noexcept {
-
-        auto padding1 = padding;
-        auto pad_length = padding.length() / 2;
+        const auto column_width = mv_data_column_header[index].Get_DisplayWidth();
+        const auto size         = mv_data_column_header.size();
+        const epadDir padDir    = mv_data_column_header[index].Get_Pad_Direction();
+        const auto precision    = mv_data_column_header[index].Get_Precision();
+        auto pad_length   = size - column_width;
+        auto p1_2 = pad_length / 2;
         bool is_decimal;
-        sstr working_value = value;
-        sstr temp = "";
-        sstr display_value = "";
-
-        switch (padDir) {
+        sstr display_value = "value";
+        sstr padding;
+        switch (padDir)
+        {
             case epadDir::unknown :
+            case epadDir::left :
                 display_value = value;
+                padding = std::string(pad_length, ' ');
                 display_value.append(padding);
                 break;
-            case epadDir::left :
+            case epadDir::right :
+                padding = std::string(pad_length, ' ');
                 display_value = padding;
                 display_value.append(value);
                 break;
+            case epadDir::both :
+                padding = std::string(p1_2, ' ');
+                display_value.append(padding);
+                display_value.append(value);
+                display_value.append(padding);
+                if (display_value.length() < column_width)
+                {
+                    display_value.append(" ");
+                }
+                break;
             case epadDir::decimal :
+
+                /*
                 is_decimal = this->m_cf.validate_string_is_numeric(value);
                 if (is_decimal) {
                     auto pos = value.find('.');
                     if (pos == s_max) // was not found
                     {
-                        temp = std::string(precision, '0');
-                        working_value.append(".");
-                        working_value.append(temp);
+                        sstr temp = std::string(precision, '0');
+                        display_value.append(".");
+                        display_value.append(temp);
                     }
-                    pos = working_value.find('.');
-                    if (((working_value.length() - pos)) <= precision)  // Add trailing zeros
+                    pos = value.find('.');
+                    if (((value.length() - pos)) <= precision)  // Add trailing zeros
                     {
-                        temp = std::string(precision, '0');
-                        working_value.append(temp);
-                        working_value = working_value.substr(0, (pos + precision + 1));
+                        sstr temp = std::string(precision, '0');
+                        value.append(temp);
+                        display_value = value.substr(0, (pos + precision + 1));
 
                     }
-                    pos = working_value.find('.');
-                    if ((working_value.length() - pos) > precision)  // trim off trailing digits
+                    pos = value.find('.');
+                    if ((value.length() - pos) > precision)  // trim off trailing digits
                     {
-                        working_value = working_value.substr(0, (pos + precision + 1));
+                        display_value = value.substr(0, (pos + precision + 1));
                     }
                     // now we have to reset the padding based on new working value
-                    pad_length = column_width - working_value.length();
+                    pad_length = column_width - value.length();
                     if (pad_length > 0) {
-                        temp = std::string(pad_length, ' ');
+                        sstr temp = std::string(pad_length, ' ');
                         display_value.append(temp);
-                        display_value.append(working_value);
-                    }
-                } else {
-                    if (isHeader) {
-                        padding1 = padding.substr(0, pad_length);
-                        if (((pad_length * 2) + value.length()) < column_width) {
-                            display_value = std::string(1, ' ');
-                        }
-                        display_value.append(padding1);
                         display_value.append(value);
-                        display_value.append(padding1);
-                    } else {
-
-                        display_value = "NaN: ";
-                        display_value.append(value);
-                        pad_length = column_width - display_value.length();
-                        if (pad_length > 0) {
-                            temp = std::string(pad_length, ' ');
-                            display_value.append(temp);
-                        }
-
                     }
                 }
-                break;
-            case epadDir::right :
-                display_value = working_value;
-                display_value.append(padding);
-                break;
-
-            case epadDir::both :
-                // account for column widths that are odd.
-                padding1 = padding.substr(0, pad_length);
-                if (((pad_length * 2) + value.length()) < column_width) {
-                    display_value = std::string(1, ' ');
+                else
+                {
+                    display_value = "NaN: ";
+                    display_value.append(value);
+                    auto pad_length = column_width - display_value.length();
+                    if (pad_length > 0) {
+                        sstr temp = std::string(pad_length, ' ');
+                        display_value.append(temp);
+                    }
                 }
-                display_value.append(padding1);
-                display_value.append(value);
-                display_value.append(padding1);
+                */
+                display_value = "Not Implemented Yet";
                 break;
         }
         return display_value;
     }
-
-    sstr DataDictionary::Get_ValueWithPadding(const usLong index, sstr value, const usLong max_width) noexcept {
-
-        const auto column_width = mv_data_column_header[index].Get_DisplayWidth();
-        const auto size = mv_data_column_header.size();
-        const epadDir padDir = mv_data_column_header[index].Get_Pad_Direction();
-        const auto precision = mv_data_column_header[index].Get_Precision();
-        // variables
-        sstr display_value = "";
-        sstr padding = "";
-
-        if (index < size) {
-            usLong pad_length;
-            if ((value.length() < max_width) && (padDir == epadDir::both)) {
-                pad_length = max_width - value.length();
-                display_value = std::string(pad_length, ' ');
-                display_value.append(value);
-                display_value = std::string(pad_length, ' ');
-                display_value.append(value);
-                value = display_value;
-                display_value.clear();
-            }
-            pad_length = column_width - value.length();
-            padding = std::string(pad_length, ' ');
-            display_value = Get_TempValueWithPadding(padDir, value, padding, column_width, precision, false);
-        }
-        return display_value;
-    }
-
 
     usLong DataDictionary::Add(DataColumnHeader& dch) noexcept {
         usLong result = 0;
         if (!m_is_full) {
-            usLong size = mv_data_column_header.size();
-            if (size > 0) {
-                const auto found = Get_DataColumnIndex(dch.Get_ColumnHeader());
-                // s_max is equivalent to -1 equivalent to not-found
-                if (found == s_max) {
-                    Add_ColumnNow(dch);
-                    result = mv_data_column_header.size() - 1;
-                } else {
-                    result = found;
-                    Show_ColumnAlreadyExists();
-                }
-            } else {
+            const auto beforeSize = mv_data_column_header.size();
+            const auto found = Get_DataColumnIndex(dch.Get_ColumnHeader());
+            auto s_max = mv_data_column_header.max_size();
+            if (found >= s_max) {
                 Add_ColumnNow(dch);
                 result = mv_data_column_header.size() - 1;
+            } else {
+                result = found;
+                Show_ColumnAlreadyExists();
             }
-            size = mv_data_column_header.size();
+            const auto afterSize = mv_data_column_header.size();
             // s_max is equivalent to -1 equivalent to full
-            if (size == s_max) {
+            if (afterSize == s_max) {
                 m_is_full = true;
                 Show_DictionaryIsNowFull();
             }
         } else {
             Show_DictionaryIsAlreadyFull();
         }
-
         return result;
     }
 
-    usLong DataDictionary::Get_DataColumnIndex(const sstr data_column_header) noexcept {
+    usLong DataDictionary::Get_DataColumnIndex(const sstr data_column_header) const noexcept {
         auto result = s_max;
         if (!m_is_full) {
             usLong size = mv_data_column_header.size();
@@ -315,15 +285,15 @@ namespace J5C_DSL_Code {
         return result;
     }
 
-    usLong DataDictionary::Get_Size() noexcept {
+    usLong DataDictionary::Get_Size() const noexcept {
         return this->mv_data_column_header.size();
     }
 
-    usLong DataDictionary::Get_Version() noexcept {
+    usLong DataDictionary::Get_Version() const noexcept {
         return m_version;
     }
 
-    usLong DataDictionary::Get_ColumnWidthSize(const usLong index) noexcept {
+    usLong DataDictionary::Get_ColumnWidthSize(const usLong index) const noexcept {
         const auto size = mv_data_column_header.size();
         if (index < size) {
             return this->mv_data_column_header[index].Get_DisplayWidth();
@@ -332,10 +302,10 @@ namespace J5C_DSL_Code {
         }
     }
 
-    void DataDictionary::Display_Address(const usLong i) noexcept {
-        std::cout << "  Column Address: ";
-        mv_data_column_header[i].Get_Address_as_String();
+    sstr DataDictionary::Get_Address_As_String(const usLong i) const noexcept {
+        return mv_data_column_header[i].Get_Address_as_String();
     }
+
 
     void DataDictionary::Remove(const sstr data_column_header) noexcept {
         bool removed = false;
@@ -354,37 +324,36 @@ namespace J5C_DSL_Code {
         }
     }
 
-    void DataDictionary::Replace(const sstr data_column_header, std::unique_ptr<DataColumnHeader>& dch) noexcept {
+    void DataDictionary::Replace(const sstr data_column_header, DataColumnHeader& dch) noexcept {
         //
         //early return possible
         //
         const auto index = Get_DataColumnIndex(data_column_header);
 
-        if (DoesExist_Column(dch->Get_ColumnHeader()) != s_max) {
+        if (DoesExist_Column(dch.Get_ColumnHeader()) != s_max) {
             Show_ColumnAlreadyExists();
             // early return
             return;
         }
         if (index != s_max) {
-            mv_data_column_header[index].Copy_Values(*dch);
+            mv_data_column_header[index].Copy_Values(dch);
             m_version++;
         }
     }
 
-    void DataDictionary::Show_DataDictionaryAll() noexcept {
-        if (!mv_data_column_header.empty()) {
-            const auto max = mv_data_column_header.size();
-            for (auto i = 0UL; i < max; i++) {
-                try {
-                    mv_data_column_header.at(i).Get_DisplayWidth();
-                    Display_Column(i);
-                }
-                catch (const std::exception e) {
-                    i = max;
-                }
+    void DataDictionary::Show_DataDictionaryAll() const noexcept {
+        std::cout << "Show All Dictionary Columns" << std::endl;
+        std::cout << "================================================" << std::endl;
+        auto max        = this->mv_data_column_header.cend();
+        auto current    = this->mv_data_column_header.cbegin();
+
+        if (this->m_is_empty ) {
+            this->Show_DictionaryIsEmpty();
+        }
+        else {
+            while (current != max) {
+                (*current).Show_Data_Header();
             }
-        } else {
-            Show_DictionaryIsEmpty();
         }
     }
 
@@ -396,7 +365,7 @@ namespace J5C_DSL_Code {
         mv_data_column_header[i].Set_SQL_Quote(false);
     }
 
-    bool DataDictionary::Get_SQL_Quotes(const usLong i) noexcept {
+    bool DataDictionary::Get_SQL_Quotes(const usLong i) const noexcept {
         return mv_data_column_header[i].Get_SQL_Quote();
     }
 

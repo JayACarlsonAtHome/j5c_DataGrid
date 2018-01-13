@@ -20,6 +20,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#ifndef DATAGRID_TEST_001_DATAGRID_H
+#define DATAGRID_TEST_001_DATAGRID_H
+
+
 #include <string>
 #include <limits>
 #include <fstream>
@@ -29,8 +33,6 @@
 
 namespace J5C_DSL_Code {
 
-#ifndef DATAGRID_TEST_001_DATAGRID_H
-#define DATAGRID_TEST_001_DATAGRID_H
 
     using sstr            = std::string;
     using usLong          = unsigned long;

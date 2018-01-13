@@ -20,6 +20,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+
+#ifndef CPP_DATA_GRID_001_COMMON_FUNCTION_H
+#define CPP_DATA_GRID_001_COMMON_FUNCTION_H
+
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -27,12 +31,10 @@
 #include <limits>
 #include <chrono>
 
-#ifndef CPP_DATA_GRID_001_COMMON_FUNCTION_H
-#define CPP_DATA_GRID_001_COMMON_FUNCTION_H
 
 namespace J5C_DSL_Code {
 
-   class Common_Functions {
+    class Common_Functions {
 
     private:
 
