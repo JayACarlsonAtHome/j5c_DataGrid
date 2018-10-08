@@ -123,11 +123,19 @@ enum_test_result validate_column(DataColumnHeader& dch,
 
         tempString1 = dch.Get_ColumnDescriptionLong();
         if (tempString1 == column_description_long)                         test06 = true;
+        if (test06 == false)
+        {
+            std::cout << "Pass to function Long description: ***" << column_description_long << "***" << "\n";
+            std::cout << "DataColumnHeader Long description: ***" << tempString1 << "***" << "\n";
+        }
+
 
         tempString1 = column_description_short.substr(0, display_width);
         tempString2 = dch.Get_ColumnDescriptionShort().substr(0, display_width);
 
         if (tempString1 == tempString2)                                     test07 = true;
+
+
         if (dch.Get_LeftFillCharacter()     == left_fill_char)              test08 = true;
         if (dch.Get_DisplayWidth()          == display_width)               test09 = true;
         if (dch.Get_Precision()             == precision)                   test10 = true;
@@ -166,7 +174,8 @@ enum_test_result validate_column(DataColumnHeader& dch,
 std::string generate_test_name(bool make,
                                std::string& pre_text,
                                std::string& post_text,
-                               std::unique_ptr<DataColumnHeader>& dch) {
+                               //std::unique_ptr<DataColumnHeader>& dch) {
+                               DataColumnHeader& dch) {
     std::string test_name;
     if (pre_text.length() > 0) {
         test_name.append(pre_text);
@@ -177,10 +186,10 @@ std::string generate_test_name(bool make,
     } else {
         test_name.append(" Initialize DataColumnHeader(");
     }
-    std::string str_width = std::to_string(dch->Get_DisplayWidth());
-    std::string str_precision = std::to_string(dch->Get_Precision());
+    std::string str_width = std::to_string(dch.Get_DisplayWidth());
+    std::string str_precision = std::to_string(dch.Get_Precision());
     std::string str_multi_line_enabled = "false, ";
-    if (dch->Get_Multi_Line_Enabled()) {
+    if (dch.Get_Multi_Line_Enabled()) {
         str_multi_line_enabled = "true, ";
     }
 
@@ -189,7 +198,7 @@ std::string generate_test_name(bool make,
     test_name.append(str_precision);
     test_name.append(", ");
     test_name.append(str_multi_line_enabled);
-    switch (dch->Get_Pad_Direction()) {
+    switch (dch.Get_Pad_Direction()) {
         case enum_pad_direction::left :
             test_name.append("left, ");
             break;
@@ -208,13 +217,13 @@ std::string generate_test_name(bool make,
     }
 
     test_name.append("\"");
-    test_name.append(dch->Get_LeftFillCharacter());
+    test_name.append(dch.Get_LeftFillCharacter());
     test_name.append("\", \"");
-    test_name.append(dch->Get_ColumnHeader());
+    test_name.append(dch.Get_ColumnHeader());
     test_name.append("\", \"");
-    test_name.append(dch->Get_ColumnDescriptionShort());
+    test_name.append(dch.Get_ColumnDescriptionLong());
     test_name.append("\", \"");
-    test_name.append(dch->Get_ColumnDescriptionLong());
+    test_name.append(dch.Get_ColumnDescriptionShort());
     test_name.append("\"");
     test_name.append(") ");
     if (post_text.length() > 0) {
@@ -222,7 +231,6 @@ std::string generate_test_name(bool make,
         test_name.append(post_text);
     }
     return test_name;
-
 }
 
 enum_test_result validate_indexes_match(unsigned long index1, DataDictionary &dd, std::string& column_name) {
@@ -397,7 +405,7 @@ int test_001() {
 }
 
 
-int test_002()
+int test_002(int max_number_of_tests)
 {
 
     horizontal_line();
@@ -413,7 +421,6 @@ int test_002()
     bool debug = true;
     bool multi_line_output = false;
     bool sql_quote = false;
-    int max_number_of_tests = 100000;
     epadDir pad_direction = enum_pad_direction::right;
     std::string default_name = "Column Name ";
     std::string column_name  = "";
@@ -469,7 +476,7 @@ int test_002()
     return 0;
 };
 
-/*
+
 int test_003() {
     horizontal_line();
     std::cout << std::endl;
@@ -486,24 +493,33 @@ int test_003() {
 
 
     test_number++; // Test 1
+    bool debug = false;
     std::string column_name = "Test Header 1";
     std::string description_short = "Description Test Header 1 Short";
     std::string description_long = "Description Test Header 1 Long";
-    width = 32;
-    precision = 10;
-    bool multi_line_enabled = false;
-    enum_pad_direction padding = enum_pad_direction::right;
     std::string left_fill_char = " ";
-    dch = new(std::nothrow) DataColumnHeader(width, precision, multi_line_enabled, padding, column_name, description_short, description_long);
-    dch->Set_Debug();
-    result = validate_column(dch, width, precision, multi_line_enabled, padding, left_fill_char, column_name, description_short,
-                             description_long);
+    int width = 32;
+    int precision = 10;
+    bool multi_line_enabled = false;
+    bool sql_quote = false;
+    enum_pad_direction padding = enum_pad_direction::right;
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+            column_name, description_long, description_short,
+            left_fill_char, width, precision);
+
+    result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding,
+                             column_name, description_long, description_short,
+                             left_fill_char, width, precision);
     dch->Show_Data_Header();
     std::string pre_text = "";
     std::string post_text = "";
+
     std::string test_name = generate_test_name(true, pre_text, post_text, *dch);
     show_test_and_results(test_number, test_name, results, result);
+    return 0;
 
+}
+    /*
     //
     auto size = 0UL;
     unsigned long index;
@@ -857,7 +873,7 @@ int test_004() {
 int main() {
 
     test_001();
-    test_002();
-    //test_003();
+    test_002(100);
+    test_003();
     //test_004();
 }

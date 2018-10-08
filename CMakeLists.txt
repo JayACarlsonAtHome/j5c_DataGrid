@@ -17,4 +17,4 @@ set(SOURCE_FILES
         main.cpp
         )
 
-add_executable(j5c_DataGrid ${SOURCE_FILES})
+add_executable(data_grid ${SOURCE_FILES})
