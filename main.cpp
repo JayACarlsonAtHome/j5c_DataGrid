@@ -494,6 +494,14 @@ int test_003() {
     DataDictionary dd = DataDictionary(false);
     const std::string SHIP_TYPE = "Ship Type";
 
+    std::string pre_text = "";
+    std::string post_text = "";
+    auto dd_Size = dd.Get_Size();
+    std::cout << "dd_Size = " << dd_Size << "\n";
+
+    dd.Show_DataDictionaryAll();
+
+
     test_number++; // Test 1
     bool debug = false;
     std::string column_name = "Data Column Header";
@@ -512,40 +520,50 @@ int test_003() {
     result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
                              description_short, left_fill_char, width, precision);
 
-    std::string pre_text = "";
-    std::string post_text = "";
+    std::cout << "\nAdding column to data dictionary\n";
+
+    dd.Add(*dch);
+    index = dd.Get_DataColumnIndex(column_name);
+    std::cout << "dd_index: \"" << column_name << "\" = " << index << "\n";
+    dd_Size = dd.Get_Size();
+    std::cout << "dd_Size = " << dd_Size << "\n";
+
+    dd.Show_DataDictionaryAll();
 
     std::string test_name = generate_test_name(true, pre_text, post_text, *dch);
     show_test_and_results(test_number, test_name, results, result);
-    return 0;
-}
-    /*
+
     //
-    auto size = 0UL;
-    unsigned long index;
-
-    DataDictionary dd = DataDictionary(false);
-    const std::string SHIP_TYPE = "Ship Type";
-
->>>>>>> master
     test_number++; // Test 2
     test_name = "Create data column header";
-    column_name       = "Type of Ship";
+    column_name = "Type of Ship";
     description_short = "Type of ship";
-    description_long  = "Type of Ship for Deep Space Game.";
+    description_long = "Type of Ship for Deep Space Game.";
 
-    dch1->Set_ColumnHeader(column_name);
-    dch1->Set_ColumnDescriptionShort(description_short);
-    dch1->Set_ColumnDescriptionLong(description_long);
-    dch1->Set_DisplayWidth(width);
-    dch1->Set_Precision(precision);
-    dd.Add(*dch1);
+    dch->Set_ColumnHeader(column_name);
+    dch->Set_ColumnDescriptionShort(description_short);
+    dch->Set_ColumnDescriptionLong(description_long);
+    dch->Set_DisplayWidth(width);
+    dch->Set_Precision(precision);
+    dd.Add(*dch);
 
-    result = validate_column(*dch1, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
+    result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
                              description_short, left_fill_char, width, precision);
 
-    dch1->Show_Data_Header();
-    show_test_and_results(test_number, test_name, results, result);
+    dch->Show_Data_Header();
+    std::cout << "\nAdding column to data dictionary\n";
+
+    dd.Add(*dch);
+    index = dd.Get_DataColumnIndex(column_name);
+    std::cout << "dd_index: \"" << column_name << "\" = " << index << "\n";
+    dd_Size = dd.Get_Size();
+    std::cout << "dd_Size = " << dd_Size << "\n";
+
+    dd.Show_DataDictionaryAll();
+    return 0;
+}
+/*
+
 
     test_number++; // Test 3
     test_name = "Create data column header";
@@ -553,28 +571,27 @@ int test_003() {
     description_short = "Armor of ship";
     description_long  = "Armor of Ship for Deep Space Game.";
 
-    dch1->Set_ColumnHeader(column_name);
-    dch1->Set_ColumnDescriptionShort(description_short);
-    dch1->Set_ColumnDescriptionLong(description_long);
-    dch1->Set_DisplayWidth(width);
-    dch1->Set_Precision(precision);
-    dd.Add(*dch1);
+    dch->Set_ColumnHeader(column_name);
+    dch->Set_ColumnDescriptionShort(description_short);
+    dch->Set_ColumnDescriptionLong(description_long);
+    dch->Set_DisplayWidth(width);
+    dch->Set_Precision(precision);
+    dd.Add(*dch);
 
-    result = validate_column(*dch1, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
+    result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
                              description_short, left_fill_char, width, precision);
 
-    dch1->Show_Data_Header();
+    dch->Show_Data_Header();
     show_test_and_results(test_number, test_name, results, result);
-
 
     dd.Show_DataDictionaryAll();
 
     size += 1;
     index = size - 1;
     result = validate_indexes_match(index, dd, column_name);
-    dch1->Show_Data_Header();
+    dch->Show_Data_Header();
     dd.Get_HeaderNameWithPadding(index);
-    test_name = "Set DataColumnHeader and add DeepCopy to Data_Dictionary.. Ensure dch1 = dd(index = 0)";
+    test_name = "Set DataColumnHeader and add DeepCopy to Data_Dictionary.. Ensure dch = dd(index = 1)";
     show_test_and_results(test_number, test_name, results, result);
 
 
