@@ -262,6 +262,42 @@ enum_test_result validate_indexes_match(unsigned long index1, DataDictionary &dd
     return result;
 }
 
+
+void test_3_add_column_results(bool newDch, int test_number, sstr pre_text, sstr post_text,
+                               DataColumnHeader &dch, DataDictionary &dd, usInt expected_dd_Size, unsigned int *results)
+{
+    enum_test_result result = enum_test_result::failed;
+    sstr column_name = dch.Get_ColumnHeader();
+    std::cout << "\nAdding column \"" << column_name << "\" to DataDictionary.\n";
+    dd.Add(dch);
+    dch.Show_Data_Header();
+    usInt index = dd.Get_DataColumnIndex(column_name);
+    std::cout << "dd_index: \"" << column_name << "\" = " << index << "\n";
+    usInt dd_Size = dd.Get_Size();
+    std::cout << "dd_Size = " << dd_Size << "\n\n";
+    if (dd_Size == expected_dd_Size) { result = enum_test_result::good; }
+    sstr test_name = generate_test_name(newDch, pre_text, post_text, dch);
+    show_test_and_results(test_number, test_name, results, result);
+    return;
+}
+
+void test_3_remove_column_results(bool newDch, int test_number, sstr pre_text, sstr post_text,
+                               DataColumnHeader &dch, DataDictionary &dd, usInt expected_dd_Size, unsigned int *results)
+{
+    enum_test_result result = enum_test_result::failed;
+    sstr column_name = dch.Get_ColumnHeader();
+    std::cout << "\nRemoving column \"" << column_name << "\" from DataDictionary.\n";
+    dd.Remove(column_name);
+    usInt index = dd.Get_DataColumnIndex(column_name);
+    std::cout << "dd_index: \"" << column_name << "\" = " << index << "\n";
+    usInt dd_Size = dd.Get_Size();
+    std::cout << "dd_Size = " << dd_Size << "\n\n";
+    if (dd_Size == expected_dd_Size) { result = enum_test_result::good; }
+    sstr test_name = generate_test_name(newDch, pre_text, post_text, dch);
+    show_test_and_results(test_number, test_name, results, result);
+    return;
+}
+
 //
 // end of test helping functions
 //
@@ -504,31 +540,52 @@ int test_003() {
     enum_test_result result;
     auto size = 0UL;
     unsigned long index;
+    int width = 32;
+    int precision = 10;
+    bool debug = true;
+    bool multi_line_enabled = false;
+    bool sql_quote = false;
+    enum_pad_direction padding = enum_pad_direction::right;
+    DataColumnHeader *dch;
+
     DataDictionary dd = DataDictionary(false);
-    sstr test_name = "Ensure DataDictionary Size = 1 after first add of column";
-
-    const std::string SHIP_TYPE = "Ship Type";
-
+    sstr test_name = "";
     std::string pre_text = "";
     std::string post_text = "";
     auto dd_Size = dd.Get_Size();
     std::cout << "dd_Size = " << dd_Size << "\n";
-
+    bool newDch = true;
     dd.Show_DataDictionaryAll();
 
 
     test_number++; // Test 1
-    bool debug = false;
+    test_name = "Ensure DataDictionary Size = 1 after first add of column";
     std::string column_name = "Data Column Header";
     std::string description_long = "Test Description Data Column Header 1 Long";
     std::string description_short = "Description dch short";
     std::string left_fill_char = " ";
-    int width = 32;
-    int precision = 10;
-    bool multi_line_enabled = false;
-    bool sql_quote = false;
-    enum_pad_direction padding = enum_pad_direction::right;
-    DataColumnHeader *dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+            column_name, description_long, description_short, left_fill_char, width, precision);
+
+    result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
+                             description_short, left_fill_char, width, precision);
+
+    if (result == enum_test_result::good) {
+        test_3_add_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 1, results);
+        newDch = false;  // this will be false for the rest of the program
+    }
+    else
+    {
+        std::cout << "validate_column did NOT return a good result./n";
+    }
+    //
+
+    test_number++; // Test 2
+    column_name = "Type of Ship";
+    description_short = "Type of ship";
+    description_long = "Type of Ship for Deep Space Game.";
+    delete dch;
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
                                                  column_name, description_long, description_short,
                                                  left_fill_char, width, precision);
 
@@ -536,194 +593,149 @@ int test_003() {
                              description_short, left_fill_char, width, precision);
 
     if (result == enum_test_result::good) {
-        dd.Add(*dch);
-        index = dd.Get_DataColumnIndex(column_name);
-        std::cout << "dd_index: \"" << column_name << "\" = " << index << "\n";
-        dd_Size = dd.Get_Size();
-        std::cout << "dd_Size = " << dd_Size << "\n";
-        dd.Show_DataDictionaryAll();
-        pre_text = "DataDictionary Size = 1\n";
-        if (dd_Size == 1) { result = enum_test_result::good; }
-        else { result = enum_test_result::failed; }
-        post_text = "";
-        std::string test_name = generate_test_name(true, pre_text, post_text, *dch);
-        show_test_and_results(test_number, test_name, results, result);
+        test_3_add_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 2, results);
     }
     else
     {
         std::cout << "validate_column did NOT return a good result./n";
     }
+
     //
-    test_number++; // Test 2
-    column_name = "Type of Ship";
-    description_short = "Type of ship";
-    description_long = "Type of Ship for Deep Space Game.";
+    test_number++; // Test 3
+    column_name = "Armor of Ship";
+    description_short = "Armor of ship";
+    description_long = "Armor of Ship for Deep Space Game.";
+    delete dch;
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+                               column_name, description_long, description_short,
+                               left_fill_char, width, precision);
 
-    dch->Set_ColumnHeader(column_name);
-    dch->Set_ColumnDescriptionShort(description_short);
-    dch->Set_ColumnDescriptionLong(description_long);
-    dch->Set_DisplayWidth(width);
-    dch->Set_Precision(precision);
     result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
                              description_short, left_fill_char, width, precision);
+
     if (result == enum_test_result::good) {
-        dd.Add(*dch);
-        dch->Show_Data_Header();
-        index = dd.Get_DataColumnIndex(column_name);
-        std::cout << "dd_index: \"" << column_name << "\" = " << index << "\n";
-        dd.Add(*dch);
-        dd_Size = dd.Get_Size();
-        std::cout << "dd_Size = " << dd_Size << "\n\n";
-        dd.Show_DataDictionaryAll();
-        pre_text = "DataDictionary Size = 2; Add Duplicate Entry, Size still = 2\n";
-        if (dd_Size == 2) { result = enum_test_result::good; }
-        else { result = enum_test_result::failed; }
-        post_text = "";
-        test_name = generate_test_name(false, pre_text, post_text, *dch);
-        show_test_and_results(test_number, test_name, results, result);
+        test_3_add_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 3, results);
     }
     else
     {
         std::cout << "validate_column did NOT return a good result./n";
     }
-    return 0;
-}
-    /*
-    test_number++; // Test 3
-    test_name = "Create data column header";
-    column_name       = "Armor of Ship";
-    description_short = "Armor of ship";
-    description_long  = "Armor of Ship for Deep Space Game.";
 
-    dch->Set_ColumnHeader(column_name);
-    dch->Set_ColumnDescriptionShort(description_short);
-    dch->Set_ColumnDescriptionLong(description_long);
-    dch->Set_DisplayWidth(width);
-    dch->Set_Precision(precision);
-    dd.Add(*dch);
-
-    result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
-                             description_short, left_fill_char, width, precision);
-
-    dch->Show_Data_Header();
-    show_test_and_results(test_number, test_name, results, result);
-
-    dd.Show_DataDictionaryAll();
-
-    size += 1;
-    index = size - 1;
-    result = validate_indexes_match(index, dd, column_name);
-    dch->Show_Data_Header();
-    dd.Get_HeaderNameWithPadding(index);
-    test_name = "Set DataColumnHeader and add DeepCopy to Data_Dictionary.. Ensure dch = dd(index = 1)";
-    show_test_and_results(test_number, test_name, results, result);
-
-
-    test_number++; // Test 3
-    column_name       = "Armor of Ship";
-    description_short = "Armor of ship";
-    description_long  = "Armor of Ship for Deep Space Game.";
-
-    dch1->Set_ColumnHeader(column_name);
-    dch1->Set_ColumnDescriptionShort(description_short);
-    dch1->Set_ColumnDescriptionLong(description_long);
-    dch1->Set_DisplayWidth(width);
-    dch1->Set_Precision(precision);
-    dch1->Set_Pad_Direction(enum_pad_direction::both);
-
-    dd.Add(*dch1);
-    size += 1;
-    index = size - 1;
-    result = validate_indexes_match(index, dd, column_name);
-    dch1->Show_Data_Header();
-    dd.Get_HeaderNameWithPadding(index);
-    test_name = "Set DataColumnHeader and add DeepCopy to Data_Dictionary.. Ensure dch1 = dd(index = 1)";
-    show_test_and_results(test_number, test_name, results, result);
-
+    //
     test_number++; // Test 4
     column_name       = "Speed of Ship";
     description_short = "Speed of ship";
     description_long  = "Speed of Ship for Deep Space Game.";
+    delete dch;
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+                               column_name, description_long, description_short,
+                               left_fill_char, width, precision);
 
-    dch1->Set_ColumnHeader(column_name);
-    dch1->Set_ColumnDescriptionShort(description_short);
-    dch1->Set_ColumnDescriptionLong(description_long);
-    dch1->Set_DisplayWidth(width);
-    dch1->Set_Precision(precision);
-    dch1->Set_Pad_Direction(enum_pad_direction::right);
+    result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
+                             description_short, left_fill_char, width, precision);
 
-    dd.Add(*dch1);
-    size += 1;
-    index = size - 1;
-    result = validate_indexes_match(index, dd, column_name);
-    dch1->Show_Data_Header();
-    dd.Get_HeaderNameWithPadding(index);
-    test_name = "Set DataColumnHeader and add DeepCopy to Data_Dictionary.. Ensure dch1 = dd(index = 2)";
-    show_test_and_results(test_number, test_name, results, result);
+    if (result == enum_test_result::good) {
+        test_3_add_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 4, results);
+    }
+    else
+    {
+        std::cout << "validate_column did NOT return a good result./n";
+    }
 
+    //
     test_number++; // Test 5
     column_name       = "Cargo Space";
     description_short = "Cargo Space of ship";
-    description_long  = "Cargo Space of ship.";
+    description_long  = "Cargo Space of Ship for Deep Space Game.";
+    delete dch;
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+                               column_name, description_long, description_short,
+                               left_fill_char, width, precision);
 
-    dch1->Set_ColumnHeader(column_name);
-    dch1->Set_ColumnDescriptionShort(description_short);
-    dch1->Set_ColumnDescriptionLong(description_long);
-    dch1->Set_DisplayWidth(width);
-    dch1->Set_Precision(precision);
-    dch1->Set_Pad_Direction(enum_pad_direction::decimal);
+    result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
+                             description_short, left_fill_char, width, precision);
 
-    dd.Add(*dch1);
-    size += 1;
-    index = size - 1;
-    result = validate_indexes_match(index, dd, column_name);
-    dch1->Show_Data_Header();
-    dd.Get_HeaderNameWithPadding(index);
-    test_name = "Set DataColumnHeader and add DeepCopy to Data_Dictionary.. Ensure dch1 = dd(index = 3)";
-    show_test_and_results(test_number, test_name, results, result);
+    if (result == enum_test_result::good) {
+        test_3_add_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 5, results);
+    }
+    else
+    {
+        std::cout << "validate_column did NOT return a good result./n";
+    }
 
+    //
     test_number++; // Test 6
     column_name       = "Weapons";
     description_short = "Weapons of ship";
-    description_long  = "Weapons of ship.";
+    description_long  = "Weapons of Ship for Deep Space Game.";
+    delete dch;
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+                               column_name, description_long, description_short,
+                               left_fill_char, width, precision);
 
-    dch1->Set_ColumnHeader(column_name);
-    dch1->Set_ColumnDescriptionShort(description_short);
-    dch1->Set_ColumnDescriptionLong(description_long);
-    dch1->Set_DisplayWidth(width);
-    dch1->Set_Precision(precision);
-    dch1->Set_Pad_Direction(enum_pad_direction::left);
+    result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
+                             description_short, left_fill_char, width, precision);
 
-    dd.Add(*dch1);
-    size += 1;
-    index = size - 1;
-    result = validate_indexes_match(index, dd, column_name);
-    dch1->Show_Data_Header();
-    dd.Get_HeaderNameWithPadding(index);
-    test_name = "Set DataColumnHeader and add DeepCopy to Data_Dictionary.. Ensure dch1 = dd(index = 4)";
-    show_test_and_results(test_number, test_name, results, result);
+    if (result == enum_test_result::good) {
+        test_3_add_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 6, results);
+    }
+    else
+    {
+        std::cout << "validate_column did NOT return a good result./n";
+    }
 
+    test_number++; // Test 7
+    column_name       = "Weapons";
+    description_short = "Weapons of ship";
+    description_long  = "Weapons of Ship for Deep Space Game.";
+    delete dch;
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+                               column_name, description_long, description_short,
+                               left_fill_char, width, precision);
+
+    result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
+                             description_short, left_fill_char, width, precision);
+
+    if (result == enum_test_result::good) {
+        pre_text = "Adding a column that is already there.";
+        test_3_add_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 6, results);
+    }
+    else
+    {
+        std::cout << "validate_column did NOT return a good result./n";
+    }
+
+    std::cout << "\n";
+    dd.Show_DataDictionaryAll();
+
+    std::cout << "\nAttempting to remove the first (index = 0) data header column";
+    pre_text = "Remove Data Column from DataDictionary";
+    test_number++; // Test 8
+    column_name = "Data Column Header";
+    description_short = "Description dch short";
+    description_long = "Test Description Data Column Header 1 Long";
+    delete dch;
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+                               column_name, description_long, description_short,
+                               left_fill_char, width, precision);
+
+    result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
+                             description_short, left_fill_char, width, precision);
+
+    if (result == enum_test_result::good) {
+        pre_text = "Removing a column that is already there.";
+        test_3_remove_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 5, results);
+    }
+    else
+    {
+        std::cout << "validate_column did NOT return a good result./n";
+    }
 
     dd.Show_DataDictionaryAll();
 
-    test_number++; // Test 7
-    dd.Add(*dch1);
-    result = validate_indexes_match(index, dd, column_name);
-    dch1->Show_Data_Header();
-    dd.Get_HeaderNameWithPadding(index);
-    test_name = "Try to add a column that is already be there.";
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; //Test 8
-    auto curr_size = dd.Get_Size();
-    auto i = curr_size - curr_size;
-
-    for (; i < curr_size; ++i )
-    {
-        std::cout << "***" << dd.Get_HeaderNameWithPadding(i)            << "***" << std::endl;
-        std::cout << "***" << dd.Get_ValueWithPadding(i, "This is a Test by Jay", 32 ) << "***" << std::endl;
-    }
-
+    return 0;
+}
+    /*
 
 
     test_number++; //Test 8
