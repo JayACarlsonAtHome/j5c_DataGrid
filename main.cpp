@@ -184,47 +184,63 @@ std::string generate_test_name(bool make,
     if (make) {
         test_name.append(" Make new DataColumnHeader(");
     } else {
-        test_name.append(" Initialize DataColumnHeader(");
+        test_name.append(" ReSet DataColumnHeader(");
+    }
+
+    sstr str_debug = "true";
+    if (dch.Get_Debug() == false)
+    {
+        str_debug = "false";
+    }
+    sstr str_sql_quote = "true";
+    if (dch.Get_SQL_Quote() == false)
+    {
+        str_sql_quote = "false";
     }
     std::string str_width = std::to_string(dch.Get_DisplayWidth());
     std::string str_precision = std::to_string(dch.Get_Precision());
-    std::string str_multi_line_enabled = "false, ";
+    std::string str_multi_line_enabled = "false";
     if (dch.Get_Multi_Line_Enabled()) {
-        str_multi_line_enabled = "true, ";
+        str_multi_line_enabled = "true";
     }
 
-    test_name.append(str_width);
-    test_name.append(", ");
-    test_name.append(str_precision);
+    test_name.append(str_debug);
     test_name.append(", ");
     test_name.append(str_multi_line_enabled);
+    test_name.append(", ");
+    test_name.append(str_sql_quote);
+    test_name.append(", ");
+    test_name.append("\"");
     switch (dch.Get_Pad_Direction()) {
         case enum_pad_direction::left :
-            test_name.append("left, ");
+            test_name.append("left");
             break;
         case enum_pad_direction::right :
-            test_name.append("right, ");
+            test_name.append("right");
             break;
         case enum_pad_direction::both :
-            test_name.append("both, ");
+            test_name.append("both");
             break;
         case enum_pad_direction::decimal :
-            test_name.append("decimal, ");
+            test_name.append("decimal");
             break;
         case enum_pad_direction::unknown :
-            test_name.append("unknown, ");
+            test_name.append("unknown");
             break;
     }
-
+    test_name.append("\", ");
     test_name.append("\"");
-    test_name.append(dch.Get_LeftFillCharacter());
-    test_name.append("\", \"");
     test_name.append(dch.Get_ColumnHeader());
+    test_name.append("\", \"");
+    test_name.append(dch.Get_ColumnDescriptionShort());
     test_name.append("\", \"");
     test_name.append(dch.Get_ColumnDescriptionLong());
     test_name.append("\", \"");
-    test_name.append(dch.Get_ColumnDescriptionShort());
-    test_name.append("\"");
+    test_name.append(dch.Get_LeftFillCharacter());
+    test_name.append("\", ");
+    test_name.append(str_width);
+    test_name.append(", ");
+    test_name.append(str_precision);
     test_name.append(") ");
     if (post_text.length() > 0) {
         test_name.append(" ");
@@ -485,13 +501,12 @@ int test_003() {
     // initialize variables
     unsigned int results[3] = {0, 0, 0};
     unsigned int test_number = 0;
-
     enum_test_result result;
-
     auto size = 0UL;
     unsigned long index;
-
     DataDictionary dd = DataDictionary(false);
+    sstr test_name = "Ensure DataDictionary Size = 1 after first add of column";
+
     const std::string SHIP_TYPE = "Ship Type";
 
     std::string pre_text = "";
@@ -520,22 +535,26 @@ int test_003() {
     result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
                              description_short, left_fill_char, width, precision);
 
-    std::cout << "\nAdding column to data dictionary\n";
-
-    dd.Add(*dch);
-    index = dd.Get_DataColumnIndex(column_name);
-    std::cout << "dd_index: \"" << column_name << "\" = " << index << "\n";
-    dd_Size = dd.Get_Size();
-    std::cout << "dd_Size = " << dd_Size << "\n";
-
-    dd.Show_DataDictionaryAll();
-
-    std::string test_name = generate_test_name(true, pre_text, post_text, *dch);
-    show_test_and_results(test_number, test_name, results, result);
-
+    if (result == enum_test_result::good) {
+        dd.Add(*dch);
+        index = dd.Get_DataColumnIndex(column_name);
+        std::cout << "dd_index: \"" << column_name << "\" = " << index << "\n";
+        dd_Size = dd.Get_Size();
+        std::cout << "dd_Size = " << dd_Size << "\n";
+        dd.Show_DataDictionaryAll();
+        pre_text = "DataDictionary Size = 1\n";
+        if (dd_Size == 1) { result = enum_test_result::good; }
+        else { result = enum_test_result::failed; }
+        post_text = "";
+        std::string test_name = generate_test_name(true, pre_text, post_text, *dch);
+        show_test_and_results(test_number, test_name, results, result);
+    }
+    else
+    {
+        std::cout << "validate_column did NOT return a good result./n";
+    }
     //
     test_number++; // Test 2
-    test_name = "Create data column header";
     column_name = "Type of Ship";
     description_short = "Type of ship";
     description_long = "Type of Ship for Deep Space Game.";
@@ -545,26 +564,31 @@ int test_003() {
     dch->Set_ColumnDescriptionLong(description_long);
     dch->Set_DisplayWidth(width);
     dch->Set_Precision(precision);
-    dd.Add(*dch);
-
     result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
                              description_short, left_fill_char, width, precision);
-
-    dch->Show_Data_Header();
-    std::cout << "\nAdding column to data dictionary\n";
-
-    dd.Add(*dch);
-    index = dd.Get_DataColumnIndex(column_name);
-    std::cout << "dd_index: \"" << column_name << "\" = " << index << "\n";
-    dd_Size = dd.Get_Size();
-    std::cout << "dd_Size = " << dd_Size << "\n";
-
-    dd.Show_DataDictionaryAll();
+    if (result == enum_test_result::good) {
+        dd.Add(*dch);
+        dch->Show_Data_Header();
+        index = dd.Get_DataColumnIndex(column_name);
+        std::cout << "dd_index: \"" << column_name << "\" = " << index << "\n";
+        dd.Add(*dch);
+        dd_Size = dd.Get_Size();
+        std::cout << "dd_Size = " << dd_Size << "\n\n";
+        dd.Show_DataDictionaryAll();
+        pre_text = "DataDictionary Size = 2; Add Duplicate Entry, Size still = 2\n";
+        if (dd_Size == 2) { result = enum_test_result::good; }
+        else { result = enum_test_result::failed; }
+        post_text = "";
+        test_name = generate_test_name(false, pre_text, post_text, *dch);
+        show_test_and_results(test_number, test_name, results, result);
+    }
+    else
+    {
+        std::cout << "validate_column did NOT return a good result./n";
+    }
     return 0;
 }
-/*
-
-
+    /*
     test_number++; // Test 3
     test_name = "Create data column header";
     column_name       = "Armor of Ship";

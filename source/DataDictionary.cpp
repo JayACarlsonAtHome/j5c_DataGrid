@@ -353,6 +353,7 @@ namespace J5C_DSL_Code {
 
             while (current < max) {
                 mv_data_column_header[current].Show_Data_Header();
+                std::cout << "\n";
                 ++current;
             }
         }
