@@ -288,9 +288,18 @@ void test_3_remove_column_results(bool newDch, int test_number, sstr pre_text, s
     sstr column_name = dch.Get_ColumnHeader();
     std::cout << "\nRemoving column \"" << column_name << "\" from DataDictionary.\n";
     dd.Remove(column_name);
-    usInt index = dd.Get_DataColumnIndex(column_name);
-    std::cout << "dd_index: \"" << column_name << "\" = " << index << "\n";
-    usInt dd_Size = dd.Get_Size();
+    std::cout << "\nTry to get the index of the removed column \"" << column_name << "\" from DataDictionary.\n";
+    const auto index = dd.Get_DataColumnIndex(column_name);
+    if (index == -1)
+    {
+        std::cout << "dd_index: \"" << column_name << "\" = " << "...invalid..." << "\n";
+    }
+    else
+    {
+        std::cout << "dd_index: \"" << column_name << "\" = " << index << "\n";
+    }
+
+    const auto dd_Size = dd.Get_Size();
     std::cout << "dd_Size = " << dd_Size << "\n\n";
     if (dd_Size == expected_dd_Size) { result = enum_test_result::good; }
     sstr test_name = generate_test_name(newDch, pre_text, post_text, dch);
@@ -565,7 +574,7 @@ int test_003() {
     std::string description_short = "Description dch short";
     std::string left_fill_char = " ";
     dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
-            column_name, description_long, description_short, left_fill_char, width, precision);
+                               column_name, description_long, description_short, left_fill_char, width, precision);
 
     result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
                              description_short, left_fill_char, width, precision);
@@ -573,9 +582,7 @@ int test_003() {
     if (result == enum_test_result::good) {
         test_3_add_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 1, results);
         newDch = false;  // this will be false for the rest of the program
-    }
-    else
-    {
+    } else {
         std::cout << "validate_column did NOT return a good result./n";
     }
     //
@@ -586,17 +593,15 @@ int test_003() {
     description_long = "Type of Ship for Deep Space Game.";
     delete dch;
     dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
-                                                 column_name, description_long, description_short,
-                                                 left_fill_char, width, precision);
+                               column_name, description_long, description_short,
+                               left_fill_char, width, precision);
 
     result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
                              description_short, left_fill_char, width, precision);
 
     if (result == enum_test_result::good) {
         test_3_add_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 2, results);
-    }
-    else
-    {
+    } else {
         std::cout << "validate_column did NOT return a good result./n";
     }
 
@@ -615,17 +620,15 @@ int test_003() {
 
     if (result == enum_test_result::good) {
         test_3_add_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 3, results);
-    }
-    else
-    {
+    } else {
         std::cout << "validate_column did NOT return a good result./n";
     }
 
     //
     test_number++; // Test 4
-    column_name       = "Speed of Ship";
+    column_name = "Speed of Ship";
     description_short = "Speed of ship";
-    description_long  = "Speed of Ship for Deep Space Game.";
+    description_long = "Speed of Ship for Deep Space Game.";
     delete dch;
     dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
                                column_name, description_long, description_short,
@@ -636,17 +639,15 @@ int test_003() {
 
     if (result == enum_test_result::good) {
         test_3_add_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 4, results);
-    }
-    else
-    {
+    } else {
         std::cout << "validate_column did NOT return a good result./n";
     }
 
     //
     test_number++; // Test 5
-    column_name       = "Cargo Space";
+    column_name = "Cargo Space";
     description_short = "Cargo Space of ship";
-    description_long  = "Cargo Space of Ship for Deep Space Game.";
+    description_long = "Cargo Space of Ship for Deep Space Game.";
     delete dch;
     dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
                                column_name, description_long, description_short,
@@ -657,17 +658,15 @@ int test_003() {
 
     if (result == enum_test_result::good) {
         test_3_add_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 5, results);
-    }
-    else
-    {
+    } else {
         std::cout << "validate_column did NOT return a good result./n";
     }
 
     //
     test_number++; // Test 6
-    column_name       = "Weapons";
+    column_name = "Weapons";
     description_short = "Weapons of ship";
-    description_long  = "Weapons of Ship for Deep Space Game.";
+    description_long = "Weapons of Ship for Deep Space Game.";
     delete dch;
     dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
                                column_name, description_long, description_short,
@@ -678,16 +677,14 @@ int test_003() {
 
     if (result == enum_test_result::good) {
         test_3_add_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 6, results);
-    }
-    else
-    {
+    } else {
         std::cout << "validate_column did NOT return a good result./n";
     }
 
     test_number++; // Test 7
-    column_name       = "Weapons";
+    column_name = "Weapons";
     description_short = "Weapons of ship";
-    description_long  = "Weapons of Ship for Deep Space Game.";
+    description_long = "Weapons of Ship for Deep Space Game.";
     delete dch;
     dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
                                column_name, description_long, description_short,
@@ -699,21 +696,20 @@ int test_003() {
     if (result == enum_test_result::good) {
         pre_text = "Adding a column that is already there.";
         test_3_add_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 6, results);
-    }
-    else
-    {
+    } else {
         std::cout << "validate_column did NOT return a good result./n";
     }
 
     std::cout << "\n";
     dd.Show_DataDictionaryAll();
 
-    std::cout << "\nAttempting to remove the first (index = 0) data header column";
-    pre_text = "Remove Data Column from DataDictionary";
+    //
     test_number++; // Test 8
+    std::cout << "\nAttempting to remove the first (index = 0) data header column\n";
+    pre_text = "Remove Data Column from DataDictionary";
     column_name = "Data Column Header";
-    description_short = "Description dch short";
-    description_long = "Test Description Data Column Header 1 Long";
+    description_short = "";
+    description_long = "";
     delete dch;
     dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
                                column_name, description_long, description_short,
@@ -723,152 +719,130 @@ int test_003() {
                              description_short, left_fill_char, width, precision);
 
     if (result == enum_test_result::good) {
-        pre_text = "Removing a column that is already there.";
+        pre_text = "Remove an existing column. ";
         test_3_remove_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 5, results);
-    }
-    else
-    {
+    } else {
         std::cout << "validate_column did NOT return a good result./n";
     }
+    dd.Show_DataDictionaryAll();
 
+    //
+    test_number++; // Test 9
+    std::cout << "\nAttempting to remove the second (index = 1) data header column\n";
+    pre_text = "Remove an existing column. ";
+    column_name = "Armor of Ship";
+    description_short = "";
+    description_long = "";
+    delete dch;
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+                               column_name, description_long, description_short,
+                               left_fill_char, width, precision);
+
+    result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
+                             description_short, left_fill_char, width, precision);
+
+    if (result == enum_test_result::good) {
+        pre_text = "Remove an existing column. ";
+        test_3_remove_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 4, results);
+    } else {
+        std::cout << "validate_column did NOT return a good result./n";
+    }
+    dd.Show_DataDictionaryAll();
+
+    //
+    test_number++; // Test 10
+    std::cout << "\nAttempting to remove the last (index = 3) data header column\n";
+    pre_text = "Remove Data Column from DataDictionary";
+    column_name = "Weapons";
+    description_short = "";
+    description_long = "";
+    delete dch;
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+                               column_name, description_long, description_short,
+                               left_fill_char, width, precision);
+
+    result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
+                             description_short, left_fill_char, width, precision);
+
+    if (result == enum_test_result::good) {
+        pre_text = "Remove an existing column. ";
+        test_3_remove_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 3, results);
+    } else {
+        std::cout << "validate_column did NOT return a good result./n";
+    }
+    dd.Show_DataDictionaryAll();
+
+    //
+    test_number++; // Test 11
+    std::cout << "\nAttempting to remove the last (index = 2) data header column\n";
+    pre_text = "Remove Data Column from DataDictionary";
+    column_name = "Cargo Space";
+    description_short = "";
+    description_long = "";
+    delete dch;
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+                               column_name, description_long, description_short,
+                               left_fill_char, width, precision);
+
+    result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
+                             description_short, left_fill_char, width, precision);
+
+    if (result == enum_test_result::good) {
+        pre_text = "Remove an existing column. ";
+        test_3_remove_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 2, results);
+    } else {
+        std::cout << "validate_column did NOT return a good result./n";
+    }
+    dd.Show_DataDictionaryAll();
+
+    //
+    test_number++; // Test 12
+    std::cout << "\nAttempting to remove the last (index = 1) data header column\n";
+    pre_text = "Remove Data Column from DataDictionary";
+    column_name = "Speed of Ship";
+    description_short = "";
+    description_long = "";
+    delete dch;
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+                               column_name, description_long, description_short,
+                               left_fill_char, width, precision);
+
+    result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
+                             description_short, left_fill_char, width, precision);
+
+    if (result == enum_test_result::good) {
+        pre_text = "Remove an existing column. ";
+        test_3_remove_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 1, results);
+    } else {
+        std::cout << "validate_column did NOT return a good result./n";
+    }
+    dd.Show_DataDictionaryAll();
+
+    //
+    test_number++; // Test 13
+    std::cout << "\nAttempting to remove the last (index = 1) data header column\n";
+    pre_text = "Remove Data Column from DataDictionary";
+    column_name = "Type of Ship";
+    description_short = "";
+    description_long = "";
+    delete dch;
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+                               column_name, description_long, description_short,
+                               left_fill_char, width, precision);
+
+    result = validate_column(*dch, debug, multi_line_enabled, sql_quote, padding, column_name, description_long,
+                             description_short, left_fill_char, width, precision);
+
+    if (result == enum_test_result::good) {
+        pre_text = "Remove an existing column. ";
+        test_3_remove_column_results(newDch, test_number, pre_text, post_text, *dch, dd, 0, results);
+    } else {
+        std::cout << "validate_column did NOT return a good result./n";
+    }
     dd.Show_DataDictionaryAll();
 
     return 0;
 }
-    /*
-
-
-    test_number++; //Test 8
-    dd.Remove("Type of Ship");
-    curr_size = dd.Get_Size();
-    if (curr_size == 4)
-    {
-        result = enum_test_result::good;
-    } else
-    {
-        result = enum_test_result::failed;
-    }
-    test_name = "Try to remove the first column.";
-    show_test_and_results(test_number, test_name, results, result);
-
-    dd.Show_DataDictionaryAll();
-
-
-    test_number++; //Test 9
-    dd.Remove("Armor of Ship");
-    curr_size = dd.Get_Size();
-    if (curr_size == 3)
-    {
-        result = enum_test_result::good;
-    } else
-    {
-        result = enum_test_result::failed;
-    }
-    test_name = "Try to remove the first column.";
-    show_test_and_results(test_number, test_name, results, result);
-
-    dd.Show_DataDictionaryAll();
-
-    test_number++; //Test 10
-    dd.Remove("Cargo Space");
-    curr_size = dd.Get_Size();
-    if (curr_size == 2)
-    {
-        result = enum_test_result::good;
-    } else
-    {
-        result = enum_test_result::failed;
-    }
-    test_name = "Try to remove the first column.";
-    show_test_and_results(test_number, test_name, results, result);
-
-    dd.Show_DataDictionaryAll();
-
-    test_number++; //Test 11
-    dd.Remove("Weapons");
-    curr_size = dd.Get_Size();
-    if (curr_size == 1)
-    {
-        result = enum_test_result::good;
-    } else
-    {
-        result = enum_test_result::failed;
-    }
-    test_name = "Try to remove the last column.";
-    show_test_and_results(test_number, test_name, results, result);
-
-    dd.Show_DataDictionaryAll();
-
-    test_number++; //Test 12
-    dd.Remove("Speed of Ship");
-    curr_size = dd.Get_Size();
-    if (curr_size == 0)
-    {
-        result = enum_test_result::good;
-    } else
-    {
-        result = enum_test_result::failed;
-    }
-    test_name = "Try to remove the only column.";
-    show_test_and_results(test_number, test_name, results, result);
-
-    dd.Show_DataDictionaryAll();
-
-    test_number++; //Test 12
-    dd.Remove("");
-    curr_size = dd.Get_Size();
-    if (curr_size == 0)
-    {
-        result = enum_test_result::good;
-    } else
-    {
-        result = enum_test_result::failed;
-    }
-    test_name = "Try to remove a column from an empty data dictionary.";
-    show_test_and_results(test_number, test_name, results, result);
-
-    dd.Show_DataDictionaryAll();
-
-    dd.Remove("Cargo Space");
-    dd.Remove("Protection");
-    dd.Remove("Protection1");
-    dd.Remove("This is a test");
-    curr_size = 0;
-    if (curr_size == dd.Get_Size())
-    {
-        result = enum_test_result::good;
-    } else
-    {
-        result = enum_test_result::failed;
-    }
-    dd.Show_DataDictionaryAll();
-    test_name = "Deleted All Columns";
-    show_test_and_results(test_number, test_name, results, result);
-
-    test_number++; // Test 15
-    dd.Remove(SHIP_TYPE);
-    curr_size = 0;
-    if (curr_size == dd.Get_Size())
-    {
-        result = enum_test_result::good;
-    } else
-    {
-        result = enum_test_result::failed;
-    }
-    test_name = "Tried to remove a column that does not exist.";
-    show_test_and_results(test_number, test_name, results, result);
-
-
-    horizontal_line();
-    std::cout << std::endl;
-    std::cout << "Testing DataDictionary Class Summary:" << std::endl;
-    show_total_results(results);
-    horizontal_line();
-    horizontal_line();
-
-    return 0;
-}
-*/
 
 /*
 int test_004a(DataGrid* dg, DataColumnHeader* dch, enum_pad_direction padding)

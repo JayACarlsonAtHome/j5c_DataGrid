@@ -50,7 +50,7 @@ namespace J5C_DSL_Code {
     class DataDictionary {
     private:
 
-        static const auto s_max = std::numeric_limits<usLong>::max();
+        static const auto snl_max = std::numeric_limits<usLong>::max();
 
  //       static notFound_DCH std::vector<DataColumnHeader>::max_size();
 
@@ -108,8 +108,7 @@ namespace J5C_DSL_Code {
         sstr   Get_ValueWithPadding(const usLong index,
                                     sstr value,
                                     const usLong max_width)         const noexcept;
-        void Show_DataDictionaryAll()                               const noexcept;
-
+        void Show_DataDictionaryAll()                               noexcept;
 
     };
 

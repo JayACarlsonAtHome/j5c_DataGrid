@@ -34,7 +34,7 @@ namespace J5C_DSL_Code {
 
     usLong DataDictionary::DoesExist_Column(const sstr data_column_header) noexcept {
         sstr data_dictionary_header;
-        auto found_column_header = s_max;
+        auto found_column_header = snl_max;
         const auto max = mv_data_column_header.size();
         for (auto i = 0UL; i < max; i++) {
             data_dictionary_header = mv_data_column_header[i].Get_ColumnHeader();
@@ -203,7 +203,7 @@ namespace J5C_DSL_Code {
                 is_decimal = this->m_cf.validate_string_is_numeric(value);
                 if (is_decimal) {
                     auto pos = value.find('.');
-                    if (pos == s_max) // was not found
+                    if (pos == snl_max) // was not found
                     {
                         sstr temp = std::string(precision, '0');
                         display_value.append(".");
@@ -261,7 +261,7 @@ namespace J5C_DSL_Code {
                 Show_ColumnAlreadyExists();
             }
             const auto afterSize = mv_data_column_header.size();
-            // s_max is equivalent to -1 equivalent to full
+            // snl_max is equivalent to -1 equivalent to full
             if (afterSize == s_max) {
                 m_is_full = true;
                 Show_DictionaryIsNowFull();
@@ -269,11 +269,24 @@ namespace J5C_DSL_Code {
         } else {
             Show_DictionaryIsAlreadyFull();
         }
+        if (mv_data_column_header.size() == 0)
+        {
+            m_is_empty = true;
+        }
+        else
+        {
+            m_is_empty = false;
+        }
         return result;
     }
 
     usLong DataDictionary::Get_DataColumnIndex(const sstr data_column_header) const noexcept {
-        auto result = s_max;
+        auto result = mv_data_column_header.max_size();
+        auto max_vector_element = mv_data_column_header.size();
+        if (max_vector_element > 0)
+        {
+            --max_vector_element;
+        }
         if (!m_is_full) {
             usLong size = mv_data_column_header.size();
             for (auto i = 0UL; i < size; i++) {
@@ -281,6 +294,11 @@ namespace J5C_DSL_Code {
                     result = i;
                 }
             }
+        }
+        if (result > max_vector_element)
+        {
+            std::cout << " *** Column \""   << data_column_header << "\" not found...\n";
+            result = -1;
         }
         return result;
     }
@@ -322,6 +340,10 @@ namespace J5C_DSL_Code {
         if (!removed) {
             std::cout << "Warning!!! The data column did not exist, so it could not be removed" << std::endl;
         }
+        if (mv_data_column_header.size() == 0)
+        {
+            m_is_empty = true;
+        }
     }
 
     void DataDictionary::Replace(const sstr data_column_header, DataColumnHeader& dch) noexcept {
@@ -330,31 +352,28 @@ namespace J5C_DSL_Code {
         //
         const auto index = Get_DataColumnIndex(data_column_header);
 
-        if (DoesExist_Column(dch.Get_ColumnHeader()) != s_max) {
+        if (DoesExist_Column(dch.Get_ColumnHeader()) != snl_max) {
             Show_ColumnAlreadyExists();
             // early return
             return;
         }
-        if (index != s_max) {
+        if (index != snl_max) {
             mv_data_column_header[index].Copy_Values(dch);
             m_version++;
         }
     }
 
-    void DataDictionary::Show_DataDictionaryAll() const noexcept {
+    void DataDictionary::Show_DataDictionaryAll() noexcept {
         std::cout << "Show All Dictionary Columns" << std::endl;
         std::cout << "================================================" << std::endl;
         if (this->m_is_empty ) {
             this->Show_DictionaryIsEmpty();
         }
-        else {
-            auto max        = this->Get_Size();
-            auto current    = 0;
-
-            while (current < max) {
-                mv_data_column_header[current].Show_Data_Header();
-                std::cout << "\n";
-                ++current;
+        else
+        {
+            for (const auto &element : mv_data_column_header)
+            {
+                element.Show_Data_Header();
             }
         }
     }
