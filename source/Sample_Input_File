@@ -2,7 +2,11 @@
 // Grid:SQL_Table_Name      "SQL Space Ship 1"
 // Grid:Output_File         "Space Ship 1.txt"
 
-// DataDictionary:Version   
+// DataDictionary:Name
+// DataDictionary:File_Name
+// DataDictionary:Version
+// DataDictionary:Last_Update
+//=================================================
 // Column:Name              "Type"
 // Column:MultiLine         "False"
 // Column:Left_Padding      " "

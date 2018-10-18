@@ -844,43 +844,66 @@ int test_003() {
     return 0;
 }
 
-/*
+
 int test_004a(DataGrid* dg, DataColumnHeader* dch, enum_pad_direction padding)
 {
+    bool debug = true;
+    bool sql_quote = false;
     std::cout << "Entering function: test_004a" << std::endl;
     std::string column_name;
     std::string description_short;
     std::string description_long = "Column for DeepSpace game";
-    width     = 25;
-    precision = 3;
+    int width     = 25;
+    int precision = 5;
     bool multi_line_enabled = false;
     std::string left_fill_char = "*";
-    enum_pad_direction padding1 = enum_pad_direction::right;
+
+    // column 0
     column_name         = "Ship Type";
     description_short   = column_name;
-    dch->Initialize(width, precision, multi_line_enabled, padding1, left_fill_char, column_name, description_short, description_long);
-    dg->Add_Column(dch);
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+                               column_name, description_long, description_short,
+                               left_fill_char, width, precision);
+    dg->Add_Column(*dch);
 
+    // column 1
     column_name         = "Speed";
     description_short   = column_name;
-    dch->Initialize(width, precision, multi_line_enabled, padding, left_fill_char, column_name, description_short, description_long);
-    dg->Add_Column(dch);
+    delete dch;
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+                               column_name, description_long, description_short,
+                               left_fill_char, width, precision);
 
+    dg->Add_Column(*dch);
+
+    // column 2
     column_name         = "Cargo Space";
     description_short   = column_name;
-    dch->Initialize(width, precision, multi_line_enabled, padding, left_fill_char, column_name, description_short, description_long);
-    dg->Add_Column(dch);
+    delete dch;
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+                               column_name, description_long, description_short,
+                               left_fill_char, width, precision);
+    dg->Add_Column(*dch);
 
+
+    // column 3
     column_name         = "Protection";
     description_short   = column_name;
-    dch->Initialize(width, precision, multi_line_enabled, padding, left_fill_char, column_name, description_short, description_long);
-    dg->Add_Column(dch);
+    delete dch;
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+                               column_name, description_long, description_short,
+                               left_fill_char, width, precision);
+    dg->Add_Column(*dch);
 
+    // column 4
     column_name         = "Maneuverability";
     description_short   = column_name;
-    dch->Initialize(width, precision, multi_line_enabled, padding, left_fill_char, column_name, description_short, description_long);
-    dg->Add_Column(dch);
-
+    delete dch;
+    dch = new DataColumnHeader(debug, multi_line_enabled, sql_quote, padding,
+                               column_name, description_long, description_short,
+                               left_fill_char, width, precision);
+    dg->Add_Column(*dch);
+    delete dch;
     return 0;
 }
 
@@ -967,12 +990,12 @@ int test_004() {
         DataColumnHeader dch1;
         dch1.Set_Debug();
 
-        DataGrid *dg1 = new(std::nothrow) DataGrid("Ship Type 1", dd);
+        DataGrid *dg1 = new(std::nothrow) DataGrid("Ship Type 1", *dd);
 
         //dg1->Set_Border_Type(enum_border_type::light);
-        //dg1->Set_Border_Type(enum_border_type::double_line);
+        dg1->Set_Border_Type(enum_border_type::double_line);
         //dg1->Set_Border_Type(enum_border_type::heavy);
-        dg1->Set_Border_Type(enum_border_type::dashes);
+        //dg1->Set_Border_Type(enum_border_type::dashes);
 
         if (dg1 != nullptr) {
             std::cout << "Datagrid Name: " << dg1->Get_Name() << std::endl;
@@ -995,7 +1018,7 @@ int test_004() {
     }
     return 0;
 }
-*/
+
 //
 // end of test sets
 //
@@ -1030,5 +1053,5 @@ int main() {
     test_001();
     test_002(100);
     test_003();
-    //test_004();
+    test_004();
 }

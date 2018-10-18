@@ -101,7 +101,7 @@ namespace J5C_DSL_Code {
 
     void DataGrid::Add_DataToDataGrid(const DG_Row values) noexcept
     {
-        const auto size  = mv_dd_column_index.size()-1;
+        const auto size  = mv_dd_column_index.size();
         std::string safe_value = "";
 
         DG_Row dg_row_temp;

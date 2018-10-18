@@ -54,7 +54,6 @@ namespace J5C_DSL_Code {
 
  //       static notFound_DCH std::vector<DataColumnHeader>::max_size();
 
-        Common_Functions m_cf;
         bool m_is_full;
         bool m_is_empty;
         bool m_debug;
@@ -76,6 +75,7 @@ namespace J5C_DSL_Code {
         void Show_DictionaryIsAlreadyFull() const noexcept;
         void Show_DictionaryIsEmpty()       const noexcept;
         void Show_DictionaryIsNowFull()     const noexcept;
+        bool Validate_String_is_Numeric(std::string str) const noexcept;
 
 
     public:

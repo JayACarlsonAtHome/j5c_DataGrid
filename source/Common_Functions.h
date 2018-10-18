@@ -39,6 +39,7 @@ namespace J5C_DSL_Code {
     private:
 
     public:
+        Common_Functions() {};
         bool validate_string_is_numeric(std::string str);
     };
 }

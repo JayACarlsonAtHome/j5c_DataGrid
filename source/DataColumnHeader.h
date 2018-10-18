@@ -99,9 +99,9 @@ namespace J5C_DSL_Code {
         // Constructors
         DataColumnHeader();
 
-        DataColumnHeader(const bool debug)    noexcept;
+        explicit DataColumnHeader(bool debug)    noexcept;
 
-        DataColumnHeader(const bool debug,
+        explicit DataColumnHeader(const bool debug,
                          const bool multi_line_output,
                          const bool sql_quote,
                          const epadDir pad_direction,
@@ -118,8 +118,6 @@ namespace J5C_DSL_Code {
             this->Copy_Values(other);
             return *this;
         };                       // assignment
-
-        DataColumnHeader &Get_Address() const noexcept;
 
         virtual ~DataColumnHeader()                       noexcept;
 

@@ -37,7 +37,7 @@ namespace J5C_DSL_Code {
 // public methods
 //
 
-    DataColumnHeader::DataColumnHeader(bool debug) noexcept
+    DataColumnHeader::DataColumnHeader(const bool debug) noexcept
     {
         init(debug);
     }
