@@ -853,7 +853,7 @@ int test_004a(DataGrid* dg, DataColumnHeader* dch, enum_pad_direction padding)
     std::string column_name;
     std::string description_short;
     std::string description_long = "Column for DeepSpace game";
-    int width     = 25;
+    int width     = 15;
     int precision = 5;
     bool multi_line_enabled = false;
     std::string left_fill_char = "*";
@@ -945,6 +945,7 @@ int test_004d(DataGrid* dg)
     dg->Reset_Data();
     dg->Set_Border_Type(enum_border_type::dashes);
 
+    dataValues.clear();
     dataValues.push_back("Destroyer");
     dataValues.push_back("1");
     dataValues.push_back("10");

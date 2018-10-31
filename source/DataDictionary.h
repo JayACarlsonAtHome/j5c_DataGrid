@@ -107,7 +107,8 @@ namespace J5C_DSL_Code {
         sstr   Get_HeaderNameWithPadding(const usLong index)        const noexcept;
         sstr   Get_ValueWithPadding(const usLong index,
                                     sstr value,
-                                    const usLong max_width)         const noexcept;
+                                    const usLong max_width,
+                                    const bool isHeader)            const noexcept;
         void Show_DataDictionaryAll()                               noexcept;
 
     };

@@ -247,6 +247,7 @@ namespace J5C_DSL_Code {
 
         const auto column_width = mv_data_column_header[index].Get_DisplayWidth();
         const auto size = mv_data_column_header.size();
+        const bool isHeader = true;
 
         sstr display_header = "";
         sstr padding = "";
@@ -256,21 +257,30 @@ namespace J5C_DSL_Code {
         if (index < size) {
             auto pad_length = column_width - curr_header.length();
             padding = std::string(pad_length, ' ');
-            display_header = Get_ValueWithPadding(index, curr_header, size);
+            display_header = Get_ValueWithPadding(index, curr_header, size, isHeader);
         }
         return display_header;
     }
 
-    sstr DataDictionary::Get_ValueWithPadding(const usLong index, sstr value, const usLong max_width) const noexcept
+    sstr DataDictionary::Get_ValueWithPadding(const usLong index, sstr value, const usLong max_width, bool isHeader) const noexcept
     {
 
         const auto column_width = mv_data_column_header[index].Get_DisplayWidth();
         const auto size         = mv_data_column_header.size();
-        const epadDir padDir    = mv_data_column_header[index].Get_Pad_Direction();
+        epadDir padDir          = mv_data_column_header[index].Get_Pad_Direction();
         const auto precision    = mv_data_column_header[index].Get_Precision();
         auto pad_length         = column_width - column_width;
         auto p1_2               = pad_length - pad_length;
         auto value_length       = value.length();
+
+
+        if (isHeader)
+        {
+            if (padDir == enum_pad_direction::decimal)
+            {
+                padDir = enum_pad_direction::right;
+            }
+        }
         if (value_length > column_width)
         {
             value = value.substr(0,column_width);
@@ -314,29 +324,49 @@ namespace J5C_DSL_Code {
                     auto pos = value.find('.');
                     if (pos == snl_max) // was not found
                     {
+                        if (column_width > value_length + precision + 1)
+                        {
+                            pad_length  = column_width;
+                            pad_length -= value_length;
+                            pad_length -= precision;
+                            pad_length -= 1; // for the decimal place holder -- i.e. the dot -- "."
+                        }
+                        if (pad_length > 0)
+                        {
+                            padding = std::string(pad_length, ' ');
+                        }
+                        else
+                        {
+                            padding = "";
+                        }
+                        display_value = padding;
+                        display_value.append(value);
                         sstr temp = std::string(precision, '0');
                         display_value.append(".");
                         display_value.append(temp);
                     }
-                    pos = value.find('.');
-                    if (((value.length() - pos)) <= precision)  // Add trailing zeros
+                    else
                     {
-                        sstr temp = std::string(precision, '0');
-                        value.append(temp);
-                        display_value = value.substr(0, (pos + precision + 1));
+                        pos = value.find('.');
+                        if (((value.length() - pos)) < precision)  // Add trailing zeros
+                        {
+                            sstr temp = std::string(precision, '0');
+                            value.append(temp);
+                            display_value = value.substr(0, (pos + precision + 1));
 
-                    }
-                    pos = value.find('.');
-                    if ((value.length() - pos) > precision)  // trim off trailing digits
-                    {
-                        display_value = value.substr(0, (pos + precision + 1));
-                    }
-                    // now we have to reset the padding based on new working value
-                    pad_length = column_width - value.length();
-                    if (pad_length > 0) {
-                        sstr temp = std::string(pad_length, ' ');
-                        display_value = temp;
-                        display_value.append(value);
+                        }
+                        pos = value.find('.');
+                        if ((value.length() - pos) > precision)  // trim off trailing digits
+                        {
+                            display_value = value.substr(0, (pos + precision + 1));
+                        }
+                        // now we have to reset the padding based on new working value
+                        pad_length = column_width - value.length();
+                        if (pad_length > 0) {
+                            sstr temp = std::string(pad_length, ' ');
+                            display_value = temp;
+                            display_value.append(value);
+                        }
                     }
                 }
                 else
@@ -344,7 +374,7 @@ namespace J5C_DSL_Code {
                     display_value = "NaN: ";
                     display_value.append(value);
                     auto pad_length = column_width - display_value.length();
-                    if (pad_length > 0) {
+                    if (pad_length > 0 && pad_length < column_width) {
                         sstr temp = std::string(pad_length, ' ');
                         display_value.append(temp);
                     }

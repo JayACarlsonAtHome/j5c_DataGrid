@@ -102,23 +102,29 @@ namespace J5C_DSL_Code {
     void DataGrid::Add_DataToDataGrid(const DG_Row values) noexcept
     {
         const auto size  = mv_dd_column_index.size();
+        auto max_width_size = mv_dd_column_max_width.size();
+        auto diff = size - max_width_size;
+        while (diff > 0)
+        {
+            mv_dd_column_max_width.emplace_back(0);
+            --diff;
+        }
+        max_width_size = mv_dd_column_max_width.size();
         std::string safe_value = "";
 
         DG_Row dg_row_temp;
         if (size == values.size()) {
-
             for (auto i = 0UL; i < values.size(); i++)
             {
                 auto max_width = mp_dd.Get_ColumnWidthSize(mv_dd_column_index[i]);
                 safe_value = values[i];
+                if (max_width < safe_value.length())
+                {
+                        safe_value = safe_value.substr(0,max_width);
+                }
                 if (mv_dd_column_max_width[i] < safe_value.length())
                 {
                     mv_dd_column_max_width[i] = safe_value.length();
-                    if (mv_dd_column_max_width[i] > max_width)
-                    {
-                        mv_dd_column_max_width[i] = max_width;
-                        safe_value = safe_value.substr(0,max_width);
-                    }
                 }
                 dg_row_temp.push_back(safe_value);
             }
@@ -570,6 +576,7 @@ namespace J5C_DSL_Code {
         sstr   display_value;
         const auto size1 = mvv_data_grid_data.size();
         const auto sizex = mv_dd_column_index.size();
+        const bool isHeader = false;
         usLong  count = 0;
         if (size1 > 0) {
             for (auto index1 = 0UL; index1 < size1; index1++) {
@@ -582,7 +589,7 @@ namespace J5C_DSL_Code {
                     for (auto index2 = 0UL; index2 < size2; index2++)
                     {
                         value = row[index2];
-                        temp = mp_dd.Get_ValueWithPadding(index2, value, mv_dd_column_max_width[index2]);
+                        temp = mp_dd.Get_ValueWithPadding(index2, value, mv_dd_column_max_width[index2], isHeader);
                         display_value.append(mv_box_characters[verSpacer]);
                         display_value.append(temp);
                     }
