@@ -5,7 +5,7 @@
 //        It is a simple text based grid for console programs.
 //
 //
-// Copyright (C) 2017  Jay A. Carlson of J5C Marketing LLC.
+// Copyright (C) 2017  Jay A. Carlson 
 //
 // This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
